@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/GVal98/blockchain-registry/issues"
   },
-  "homepage": "https://github.com/GVal98/blockchain-registry#readme"
+  "homepage": "https://github.com/GVal98/blockchain-registry#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^6.8.0"
+  }
 }
