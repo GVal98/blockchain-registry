@@ -1,0 +1,19 @@
+{
+  "name": "blockchain-registry",
+  "version": "1.0.0",
+  "description": "Simple registry on blockchain",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GVal98/blockchain-registry.git"
+  },
+  "author": "GVal98",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/GVal98/blockchain-registry/issues"
+  },
+  "homepage": "https://github.com/GVal98/blockchain-registry#readme"
+}
