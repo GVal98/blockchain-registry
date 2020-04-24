@@ -1,10 +1,10 @@
 require('dotenv').config();
-const { Server } = require('./server');
+const { HTTPServer } = require('./http-server');
 
 class App {
   async run() {
-    this.server = new Server();
-    await this.server.start();
+    this.httpServer = new HTTPServer();
+    await this.httpServer.start();
     console.log('Server started');
   }
 }
