@@ -1,6 +1,6 @@
 const express = require('express');
 
-module.exports = class Server {
+exports.Server = class Server {
   constructor() {
     this.server = express();
     this.server.get('/', (request, response) => {

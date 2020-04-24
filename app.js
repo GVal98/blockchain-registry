@@ -1,5 +1,5 @@
 require('dotenv').config();
-const Server = require('./server');
+const { Server } = require('./server');
 
 class App {
   async run() {
