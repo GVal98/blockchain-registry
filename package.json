@@ -16,7 +16,9 @@
     "url": "https://github.com/GVal98/blockchain-registry/issues"
   },
   "homepage": "https://github.com/GVal98/blockchain-registry#readme",
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.17.1"
+  },
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
