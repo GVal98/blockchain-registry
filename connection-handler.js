@@ -1,4 +1,5 @@
 const fs = require('fs');
+const needle = require('needle');
 
 exports.ConnectionHandler = class ConnectionHandler {
   constructor() {
@@ -16,5 +17,19 @@ exports.ConnectionHandler = class ConnectionHandler {
 
   getNodes() {
     return this.nodes;
+  }
+
+  static getStringAddress(node) {
+    return `http://${node.ip}:${node.port}/`;
+  }
+
+  static getHeight(address) {
+    needle.get(`${address}getHeight`, { open_timeout: 3000 }, (error, response) => {
+      if (!error) {
+        // console.log(response.body);
+      } else {
+        // console.log('eror');
+      }
+    });
   }
 };
