@@ -1,4 +1,3 @@
-require('dotenv').config();
 const { HTTPServer } = require('./http-server');
 
 class App {
