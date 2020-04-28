@@ -1,11 +1,11 @@
 const express = require('express');
-const { Server } = require('./server');
 
 exports.HTTPServer = class HTTPServer {
-  constructor() {
+  constructor(server) {
+    this.server = server;
     this.setPort();
     this.httpServer = express();
-    this.addRoute('/', Server.status());
+    this.addRoutes();
   }
 
   start() {
@@ -17,7 +17,12 @@ exports.HTTPServer = class HTTPServer {
   }
 
   addRoute(route, func) {
-    this.httpServer.get(route, (request, response) => response.send(func));
+    this.httpServer.get(route, (request, response) => response.send({ result: func }));
+  }
+
+  addRoutes() {
+    this.addRoute('/getHeight', this.server.getHeight());
+    this.addRoute('/getNodes', this.server.getNodes());
   }
 
   setPort() {

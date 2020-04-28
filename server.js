@@ -1,5 +1,14 @@
 exports.Server = class Server {
-  static status() {
-    return { status: 'ok' };
+  constructor(blockchainHandler, connectionHandler) {
+    this.blockchainHandler = blockchainHandler;
+    this.connectionHandler = connectionHandler;
+  }
+
+  getHeight() {
+    return this.blockchainHandler.getHeight();
+  }
+
+  getNodes() {
+    return this.connectionHandler.getNodes();
   }
 };

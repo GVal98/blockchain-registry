@@ -13,4 +13,8 @@ exports.ConnectionHandler = class ConnectionHandler {
   loadNodesFromFile() {
     this.nodes = JSON.parse(fs.readFileSync(this.nodesFile));
   }
+
+  getNodes() {
+    return this.nodes;
+  }
 };
