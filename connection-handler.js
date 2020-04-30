@@ -19,17 +19,30 @@ exports.ConnectionHandler = class ConnectionHandler {
     return this.nodes;
   }
 
-  static getStringAddress(node) {
-    return `http://${node.ip}:${node.port}/`;
+  static getURL(node, func) {
+    return `http://${node.ip}:${node.port}/${func}`;
   }
 
-  static getHeight(address) {
-    needle.get(`${address}getHeight`, { open_timeout: 3000 }, (error, response) => {
-      if (!error) {
-        // console.log(response.body);
-      } else {
-        // console.log('eror');
-      }
+  static sendRequest(node, func) {
+    return new Promise((resolve) => {
+      needle.get(
+        ConnectionHandler.getURL(node, func),
+        { open_timeout: 3000 },
+        (error, response) => {
+          if (error) {
+            return resolve(null);
+          }
+          return resolve(response.body);
+        },
+      );
     });
+  }
+
+  static getNodes(node) {
+    return ConnectionHandler.sendRequest(node, 'getNodes');
+  }
+
+  static getHeight(node) {
+    return ConnectionHandler.sendRequest(node, 'getHeight');
   }
 };
