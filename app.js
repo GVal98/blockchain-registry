@@ -5,6 +5,7 @@ const { Server } = require('./server');
 class App {
   async run() {
     this.connectionHandler = new ConnectionHandler();
+    await this.connectionHandler.init();
     console.log('Connection handler started');
 
     this.blockchainHandler = new BlockchainHandler(this.connectionHandler);
@@ -12,7 +13,7 @@ class App {
 
     this.Server = new Server(this.blockchainHandler, this.connectionHandler);
     await this.Server.start();
-    console.log('server started');
+    console.log('Server started');
   }
 }
 

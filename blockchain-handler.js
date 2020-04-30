@@ -8,7 +8,7 @@ exports.BlockchainHandler = class BlockchainHandler {
   }
 
   setBlockchainFile() {
-    [, , , , this.blockchainFile] = process.argv;
+    [, , , , , this.blockchainFile] = process.argv;
   }
 
   loadBlockchainFromFile() {

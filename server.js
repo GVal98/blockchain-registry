@@ -27,6 +27,6 @@ exports.Server = class Server {
   }
 
   setPort() {
-    [, , this.port] = process.argv;
+    [, , , this.port] = process.argv;
   }
 };
