@@ -17,7 +17,7 @@ exports.ConnectionHandler = class ConnectionHandler {
     setInterval(() => this.getAvailableNodesFull(this.allNodes), 5000);
   }
 
-  getAvailableNodes(getNodesPromises, pendingNodes, targetNodes) {
+  getAvailableNodes(getNodesPromises, pendingNodes, targetNodes, availableNodes) {
     targetNodes.forEach(async (node) => {
       if (this.isNodeItself(node)) {
         console.log(`Skipped: ${JSON.stringify(node)} (Self)`);
@@ -27,7 +27,7 @@ exports.ConnectionHandler = class ConnectionHandler {
         console.log(`Skipped: ${JSON.stringify(node)} (Already pending)`);
         return;
       }
-      const getNodes = ConnectionHandler.getNodes(node);
+      const getNodes = this.requestGetNodes(node);
       getNodesPromises.push(getNodes);
       pendingNodes.push(node);
       console.log(`Checking: ${JSON.stringify(node)}`);
@@ -35,8 +35,10 @@ exports.ConnectionHandler = class ConnectionHandler {
       this.pushToAllNodes(node);
       if (nodes) {
         console.log(`Available: ${JSON.stringify(node)}`);
-        this.pushToAvailableNodes(node);
-        getNodesPromises.push(this.getAvailableNodes(getNodesPromises, pendingNodes, nodes.result));
+        ConnectionHandler.pushIfNotIn(node, availableNodes);
+        getNodesPromises.push(
+          this.getAvailableNodes(getNodesPromises, pendingNodes, nodes.result, availableNodes),
+        );
       } else {
         console.log(`Not available: ${JSON.stringify(node)}`);
       }
@@ -44,10 +46,12 @@ exports.ConnectionHandler = class ConnectionHandler {
   }
 
   async getAvailableNodesFull(targetNodes) {
+    const availableNodes = [];
     const getNodesPromises = [];
     const pendingNodes = [];
-    this.getAvailableNodes(getNodesPromises, pendingNodes, targetNodes);
+    this.getAvailableNodes(getNodesPromises, pendingNodes, targetNodes, availableNodes);
     await Promise.all(getNodesPromises);
+    this.availableNodes = availableNodes;
     this.printNodesStatus();
   }
 
@@ -57,9 +61,6 @@ exports.ConnectionHandler = class ConnectionHandler {
     }
   }
 
-  pushToAvailableNodes(node) {
-    ConnectionHandler.pushIfNotIn(node, this.availableNodes);
-  }
 
   pushToAllNodes(node) {
     ConnectionHandler.pushIfNotIn(node, this.allNodes);
@@ -86,7 +87,9 @@ exports.ConnectionHandler = class ConnectionHandler {
     this.allNodes = JSON.parse(fs.readFileSync(this.nodesFile));
   }
 
-  getNodes() {
+  getNodes(node) {
+    console.log(`Request by node: ${JSON.stringify(node)}`);
+    this.pushToAllNodes(node);
     return this.allNodes;
   }
 
@@ -94,11 +97,12 @@ exports.ConnectionHandler = class ConnectionHandler {
     return `http://${node.ip}:${node.port}/${func}`;
   }
 
-  static sendRequest(node, func) {
+  sendRequest(node, func) {
     return new Promise((resolve) => {
-      needle.get(
+      needle.post(
         ConnectionHandler.getURL(node, func),
-        { open_timeout: 3000 },
+        this.node,
+        { open_timeout: 3000, json: true },
         (error, response) => {
           if (error) {
             return resolve(null);
@@ -109,12 +113,12 @@ exports.ConnectionHandler = class ConnectionHandler {
     });
   }
 
-  static getNodes(node) {
-    return ConnectionHandler.sendRequest(node, 'getNodes');
+  requestGetNodes(node) {
+    return this.sendRequest(node, 'getNodes');
   }
 
-  static getHeight(node) {
-    return ConnectionHandler.sendRequest(node, 'getHeight');
+  requestgetHeight(node) {
+    return this.sendRequest(node, 'getHeight');
   }
 
   printNodesStatus() {
