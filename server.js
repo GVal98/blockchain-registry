@@ -20,24 +20,27 @@ exports.Server = class Server {
   }
 
   addRoute(route, func) {
-    this.server.post(route, (request, response) => this.handleRequest(
+    this.server.post(route, (request, response) => Server.handleRequest(
       response,
       request,
       func,
     ));
   }
 
-  handleRequest(response, request, func) {
-    response.send(this.formFullResponse(func, request.body));
-  }
-
-  formFullResponse(func, json) {
-    return { nodeIP: this.ip, nodePort: this.port, result: func(json) };
+  static handleRequest(response, request, func) {
+    response.send({ result: func(request.body) });
   }
 
   addRoutes() {
     this.addRoute('/getHeight', () => this.blockchainHandler.getHeight());
-    this.addRoute('/getNodes', (json) => this.connectionHandler.getNodes(json));
+    this.addRoute('/getNodes', (json) => this.getNodes(json));
+  }
+
+  getNodes(json) {
+    return {
+      height: this.blockchainHandler.getHeight(),
+      nodes: this.connectionHandler.getNodes(json),
+    };
   }
 
   setPort() {

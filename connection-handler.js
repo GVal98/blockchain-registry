@@ -31,18 +31,29 @@ exports.ConnectionHandler = class ConnectionHandler {
       getNodesPromises.push(getNodes);
       pendingNodes.push(node);
       console.log(`Checking: ${JSON.stringify(node)}`);
-      const nodes = await getNodes;
+      const response = await getNodes;
       this.pushToAllNodes(node);
-      if (nodes) {
+      if (response) {
         console.log(`Available: ${JSON.stringify(node)}`);
-        ConnectionHandler.pushIfNotIn(node, availableNodes);
+        ConnectionHandler.pushIfNotIn(
+          ConnectionHandler.getFullNode(node, response.result.height), availableNodes,
+        );
         getNodesPromises.push(
-          this.getAvailableNodes(getNodesPromises, pendingNodes, nodes.result, availableNodes),
+          this.getAvailableNodes(
+            getNodesPromises,
+            pendingNodes,
+            response.result.nodes,
+            availableNodes,
+          ),
         );
       } else {
         console.log(`Not available: ${JSON.stringify(node)}`);
       }
     });
+  }
+
+  static getFullNode(node, height) {
+    return { ...node, height };
   }
 
   async getAvailableNodesFull(targetNodes) {
@@ -71,7 +82,7 @@ exports.ConnectionHandler = class ConnectionHandler {
   }
 
   static isNodesEqual(node1, node2) {
-    return (JSON.stringify(node1) === JSON.stringify(node2));
+    return (node1.port === node2.port && node1.ip === node2.ip);
   }
 
   isNodeItself(node) {
