@@ -34,6 +34,11 @@ exports.Server = class Server {
   addRoutes() {
     this.addRoute('/getHeight', () => this.blockchainHandler.getHeight());
     this.addRoute('/getNodes', (json) => this.getNodes(json));
+    this.addRoute('/getBlocks', (json) => this.getBlocks(json));
+  }
+
+  getBlocks(json) {
+    return this.blockchainHandler.getBlocks(json.startBlock, json.endBlock);
   }
 
   getNodes(json) {
