@@ -5,7 +5,6 @@ exports.BlockchainHandler = class BlockchainHandler {
     this.connectionHandler = connectionHandler;
     this.loadBlockchainFromFile();
     this.setValidatorPrivateKey();
-    console.log(this.validatorPrivateKey);
     setInterval(() => this.updateChain(), 3500);
   }
 
