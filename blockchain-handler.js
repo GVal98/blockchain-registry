@@ -3,8 +3,6 @@ const fs = require('fs');
 exports.BlockchainHandler = class BlockchainHandler {
   constructor(connectionHandler) {
     this.connectionHandler = connectionHandler;
-    this.setBlockchainFile();
-    this.setValidatorPrivateKeyFile();
     this.loadBlockchainFromFile();
     this.setValidatorPrivateKey();
     console.log(this.validatorPrivateKey);
@@ -20,16 +18,20 @@ exports.BlockchainHandler = class BlockchainHandler {
     console.log(this.blockchain);
   }
 
-  setBlockchainFile() {
-    [, , , , , this.blockchainFile] = process.argv;
+  static getBlockchainFile() {
+    return process.argv[5];
   }
 
-  setValidatorPrivateKeyFile() {
-    [, , , , , , this.validatorPrivateKeyFile] = process.argv;
+  static getValidatorPrivateKeyFile() {
+    return process.argv[6];
   }
 
   loadBlockchainFromFile() {
-    this.blockchain = JSON.parse(fs.readFileSync(this.blockchainFile));
+    this.blockchain = JSON.parse(fs.readFileSync(BlockchainHandler.getBlockchainFile()));
+  }
+
+  setValidatorPrivateKey() {
+    this.validatorPrivateKey = fs.readFileSync(BlockchainHandler.getValidatorPrivateKeyFile());
   }
 
   getBlocks(startBlock, endBlock) {
@@ -38,9 +40,5 @@ exports.BlockchainHandler = class BlockchainHandler {
 
   getHeight() {
     return this.blockchain.length - 1;
-  }
-
-  setValidatorPrivateKey() {
-    this.validatorPrivateKey = fs.readFileSync(this.validatorPrivateKeyFile);
   }
 };
