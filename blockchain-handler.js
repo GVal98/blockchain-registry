@@ -1,11 +1,30 @@
 const fs = require('fs');
+const crypto = require('crypto');
 
 exports.BlockchainHandler = class BlockchainHandler {
   constructor(connectionHandler) {
     this.connectionHandler = connectionHandler;
     this.loadBlockchainFromFile();
     this.setValidatorPrivateKey();
+    this.setValidators();
     setInterval(() => this.updateChain(), 3500);
+  }
+
+  static isBlockHashValid(block) {
+    const { hash, ...blockWithoutHash } = block;
+    if (block.hash === crypto.createHash('sha256').update(JSON.stringify(blockWithoutHash)).digest('hex')) {
+      return true;
+    }
+    return false;
+  }
+
+  setValidators() {
+    this.validators = [];
+    if (BlockchainHandler.isBlockHashValid(this.blockchain[0])) {
+      this.blockchain[0].transaction.data.validators.forEach((validator) => {
+        this.validators.push(validator);
+      });
+    }
   }
 
   async updateChain() {
