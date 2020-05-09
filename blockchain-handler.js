@@ -1,11 +1,12 @@
 const fs = require('fs');
 const crypto = require('crypto');
+const { Elliptic } = require('./elliptic');
 
 exports.BlockchainHandler = class BlockchainHandler {
   constructor(connectionHandler) {
     this.connectionHandler = connectionHandler;
+    this.elliptic = new Elliptic();
     this.loadBlockchainFromFile();
-    this.setValidatorPrivateKey();
     this.setValidators();
     setInterval(() => this.updateChain(), 3500);
   }
@@ -16,6 +17,19 @@ exports.BlockchainHandler = class BlockchainHandler {
       return true;
     }
     return false;
+  }
+
+  createTransaction(data) {
+    let transaction = {};
+    transaction.time = Date.now();
+    transaction.type = 'data';
+    transaction.data = data;
+    transaction = this.elliptic.signTransaction(transaction);
+    return transaction;
+  }
+
+  sendTransaction() {
+    this.connectionHandler.sendTransaction();
   }
 
   setValidators() {
@@ -68,16 +82,8 @@ exports.BlockchainHandler = class BlockchainHandler {
     return process.argv[5];
   }
 
-  static getValidatorPrivateKeyFile() {
-    return process.argv[6];
-  }
-
   loadBlockchainFromFile() {
     this.blockchain = JSON.parse(fs.readFileSync(BlockchainHandler.getBlockchainFile()));
-  }
-
-  setValidatorPrivateKey() {
-    this.validatorPrivateKey = fs.readFileSync(BlockchainHandler.getValidatorPrivateKeyFile());
   }
 
   getBlocks(startBlock, endBlock) {
