@@ -15,9 +15,27 @@ exports.Elliptic = class Elliptic {
   signTransaction(transaction) {
     const signedTransaction = transaction;
     signedTransaction.sender = this.senderPublicKey;
-    const transactionHash = crypto.createHash('sha256').update(JSON.stringify(signedTransaction)).digest('hex');
+    const transactionHash = Elliptic.getUnsignedTransactionHash(transaction);
     signedTransaction.sign = this.senderKey.sign(transactionHash).toHex();
     return signedTransaction;
+  }
+
+  static getUnsignedTransactionHash(transaction) {
+    return crypto.createHash('sha256').update(JSON.stringify(transaction)).digest('hex');
+  }
+
+  static getUnsignedTransaction(transaction) {
+    const unsignedTransaction = { ...transaction };
+    delete unsignedTransaction.sign;
+    return unsignedTransaction;
+  }
+
+  verifyTransactionSign(transaction) {
+    const senderKey = this.eddsa.keyFromPublic(transaction.sender, 'hex');
+    const transactionHash = Elliptic.getUnsignedTransactionHash(
+      Elliptic.getUnsignedTransaction(transaction),
+    );
+    return senderKey.verify(transactionHash, transaction.sign);
   }
 
   static getValidatorPrivateKeyFile() {

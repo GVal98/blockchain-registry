@@ -35,6 +35,7 @@ exports.Server = class Server {
     this.addRoute('/getHeight', () => this.blockchainHandler.getHeight());
     this.addRoute('/getNodes', (json) => this.getNodes(json));
     this.addRoute('/getBlocks', (json) => this.getBlocks(json));
+    this.addRoute('/sendTransaction', (json) => this.connectionHandler.getNewTransaction(json));
   }
 
   getBlocks(json) {

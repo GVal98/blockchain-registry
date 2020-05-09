@@ -2,10 +2,12 @@ const fs = require('fs');
 const { Request } = require('./request');
 
 exports.ConnectionHandler = class ConnectionHandler {
-  constructor() {
+  constructor(transactionHelper) {
     this.setNodesFile();
     this.loadNodesFromFile();
     this.availableNodes = [];
+    this.transactionHelper = transactionHelper;
+    this.pendingTransactions = [];
     [, , this.nodeIP] = process.argv;
     [, , , this.nodePort] = process.argv;
     this.node = { ip: this.nodeIP, port: parseInt(this.nodePort, 10) };
@@ -102,6 +104,32 @@ exports.ConnectionHandler = class ConnectionHandler {
         // console.log(`Not available: ${JSON.stringify(node)}`);
       }
     });
+  }
+
+  async sendTransaction(transaction) {
+    console.log('Sending transaction:');
+    console.log(transaction);
+    this.availableNodes.forEach(async (node) => {
+      console.log(`Sending transaction to: ${JSON.stringify(node)}`);
+      const response = await Request.sendTransaction(node, transaction);
+      if (response !== null) {
+        if (response.result === true) {
+          console.log(`${JSON.stringify(node)}: Transaction added to pending`);
+        } else {
+          console.log(`${JSON.stringify(node)}: Invalid transaction`);
+        }
+      }
+    });
+  }
+
+  getNewTransaction(transaction) {
+    console.log('New transaction:');
+    console.log(transaction);
+    if (this.transactionHelper.isTransactionValid(transaction)) {
+      ConnectionHandler.pushIfNotIn(transaction, this.pendingTransactions);
+      return true;
+    }
+    return false;
   }
 
   static getFullNode(node, height) {

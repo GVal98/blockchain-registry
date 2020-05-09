@@ -1,13 +1,14 @@
 const fs = require('fs');
 const crypto = require('crypto');
-const { Elliptic } = require('./elliptic');
 
 exports.BlockchainHandler = class BlockchainHandler {
-  constructor(connectionHandler) {
+  constructor(connectionHandler, transactionHelper) {
     this.connectionHandler = connectionHandler;
-    this.elliptic = new Elliptic();
+    this.transactionHelper = transactionHelper;
     this.loadBlockchainFromFile();
     this.setValidators();
+    const tx = this.transactionHelper.createTransaction('nodata');
+    this.sendTransaction(tx);
     setInterval(() => this.updateChain(), 3500);
   }
 
@@ -19,17 +20,8 @@ exports.BlockchainHandler = class BlockchainHandler {
     return false;
   }
 
-  createTransaction(data) {
-    let transaction = {};
-    transaction.time = Date.now();
-    transaction.type = 'data';
-    transaction.data = data;
-    transaction = this.elliptic.signTransaction(transaction);
-    return transaction;
-  }
-
-  sendTransaction() {
-    this.connectionHandler.sendTransaction();
+  sendTransaction(transaction) {
+    this.connectionHandler.sendTransaction(transaction);
   }
 
   setValidators() {

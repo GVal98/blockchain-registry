@@ -25,6 +25,10 @@ exports.Request = class Request {
     return Request.send(node, 'getNodes', thisNode);
   }
 
+  static sendTransaction(node, transaction) {
+    return Request.send(node, 'sendTransaction', transaction);
+  }
+
   static getHeight(node) {
     return Request.send(node, 'getHeight');
   }
