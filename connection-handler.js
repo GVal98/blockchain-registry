@@ -9,7 +9,6 @@ exports.ConnectionHandler = class ConnectionHandler {
     [, , this.nodeIP] = process.argv;
     [, , , this.nodePort] = process.argv;
     this.node = { ip: this.nodeIP, port: parseInt(this.nodePort, 10) };
-    this.request = new Request();
   }
 
   async init() {
