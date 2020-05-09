@@ -1,5 +1,5 @@
 const fs = require('fs');
-const needle = require('needle');
+const { Request } = require('./request');
 
 exports.ConnectionHandler = class ConnectionHandler {
   constructor() {
@@ -9,6 +9,7 @@ exports.ConnectionHandler = class ConnectionHandler {
     [, , this.nodeIP] = process.argv;
     [, , , this.nodePort] = process.argv;
     this.node = { ip: this.nodeIP, port: parseInt(this.nodePort, 10) };
+    this.request = new Request();
   }
 
   async init() {
@@ -36,7 +37,7 @@ exports.ConnectionHandler = class ConnectionHandler {
   }
 
   static async downloadNewBlocks(node, currentHeight) {
-    const newBlocks = await ConnectionHandler.getBlocks(node, currentHeight + 1, node.height);
+    const newBlocks = await Request.getBlocks(node, currentHeight + 1, node.height);
     return newBlocks.result;
   }
 
@@ -44,7 +45,7 @@ exports.ConnectionHandler = class ConnectionHandler {
     const getHeightPromises = [];
     const updatedAvailableNodes = [];
     this.availableNodes.forEach(async (node) => {
-      const requestgetHeight = ConnectionHandler.getHeight(node);
+      const requestgetHeight = Request.getHeight(node);
       getHeightPromises.push(requestgetHeight);
       // console.log(`Updating: ${JSON.stringify(node)}`);
       const response = await requestgetHeight;
@@ -79,7 +80,7 @@ exports.ConnectionHandler = class ConnectionHandler {
         // console.log(`Skipped: ${JSON.stringify(node)} (Already pending)`);
         return;
       }
-      const getNodes = this.requestGetNodes(node);
+      const getNodes = Request.getNodes(node, this.node);
       getNodesPromises.push(getNodes);
       pendingNodes.push(node);
       // console.log(`Checking: ${JSON.stringify(node)}`);
@@ -154,38 +155,6 @@ exports.ConnectionHandler = class ConnectionHandler {
     // console.log(`Request by node: ${JSON.stringify(node)}`);
     this.pushToAllNodes(node);
     return this.allNodes;
-  }
-
-  static getURL(node, func) {
-    return `http://${node.ip}:${node.port}/${func}`;
-  }
-
-  static sendRequest(node, func, data) {
-    return new Promise((resolve) => {
-      needle.post(
-        ConnectionHandler.getURL(node, func),
-        data,
-        { open_timeout: 3000, json: true },
-        (error, response) => {
-          if (error) {
-            return resolve(null);
-          }
-          return resolve(response.body);
-        },
-      );
-    });
-  }
-
-  requestGetNodes(node) {
-    return ConnectionHandler.sendRequest(node, 'getNodes', this.node);
-  }
-
-  static getHeight(node) {
-    return ConnectionHandler.sendRequest(node, 'getHeight');
-  }
-
-  static getBlocks(node, startBlock, endBlock) {
-    return ConnectionHandler.sendRequest(node, 'getBlocks', { startBlock, endBlock });
   }
 
   printNodesStatus() {
