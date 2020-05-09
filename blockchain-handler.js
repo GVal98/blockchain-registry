@@ -27,11 +27,39 @@ exports.BlockchainHandler = class BlockchainHandler {
     }
   }
 
+  static isBlockPreviousHashValid(previousBlock, block) {
+    if (previousBlock.hash === block.previousHash) {
+      return true;
+    }
+    return false;
+  }
+
+  isBlockPreviousHashValid(block) {
+    return BlockchainHandler.isBlockPreviousHashValid(this.getLastBlock(), block);
+  }
+
+  getLastBlock() {
+    return this.blockchain[this.blockchain.length - 1];
+  }
+
   async updateChain() {
     const newBlocks = await this.connectionHandler.getNewBlocks(this.getHeight());
-    if (newBlocks !== null) {
-      this.blockchain = this.blockchain.concat(newBlocks);
+    if (newBlocks === null) {
+      return;
     }
+    newBlocks.forEach((block) => {
+      if (!BlockchainHandler.isBlockHashValid(block)) {
+        console.log('Wrong hash');
+        return;
+      }
+      if (!this.isBlockPreviousHashValid(block)) {
+        console.log('Wrong previous hash');
+        return;
+      }
+      this.blockchain.push(block);
+      console.log('New block:');
+      console.log(block);
+    });
     console.log('Chain:');
     console.log(this.blockchain);
   }

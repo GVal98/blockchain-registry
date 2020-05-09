@@ -30,8 +30,8 @@ exports.ConnectionHandler = class ConnectionHandler {
     }
     console.log(`Updating from: ${JSON.stringify(highestNode)}`);
     const newBlocks = await ConnectionHandler.downloadNewBlocks(highestNode, currentHeight);
-    console.log('New blocks:');
-    console.log(newBlocks);
+    // console.log('New blocks:');
+    // console.log(newBlocks);
     return newBlocks;
   }
 
