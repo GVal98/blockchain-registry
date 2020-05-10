@@ -1,8 +1,6 @@
-const { Elliptic } = require('./elliptic');
-
 exports.TransactionHelper = class TransactionHelper {
-  constructor() {
-    this.elliptic = new Elliptic();
+  constructor(elliptic) {
+    this.elliptic = elliptic;
   }
 
   createTransaction(data) {

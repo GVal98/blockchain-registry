@@ -1,10 +1,11 @@
 const fs = require('fs');
-const crypto = require('crypto');
+const { BlockHelper } = require('./block-helper');
 
 exports.BlockchainHandler = class BlockchainHandler {
-  constructor(connectionHandler, transactionHelper) {
+  constructor(connectionHandler, transactionHelper, blockHelper) {
     this.connectionHandler = connectionHandler;
     this.transactionHelper = transactionHelper;
+    this.blockHelper = blockHelper;
     this.loadBlockchainFromFile();
     this.setValidators();
     const tx = this.transactionHelper.createTransaction('nodata');
@@ -13,36 +14,21 @@ exports.BlockchainHandler = class BlockchainHandler {
     setInterval(() => this.updatePendingTransactions(), 3500);
   }
 
-  static isBlockHashValid(block) {
-    const { hash, ...blockWithoutHash } = block;
-    if (block.hash === crypto.createHash('sha256').update(JSON.stringify(blockWithoutHash)).digest('hex')) {
-      return true;
-    }
-    return false;
-  }
-
   sendTransaction(transaction) {
     this.connectionHandler.sendTransaction(transaction);
   }
 
   setValidators() {
     this.validators = [];
-    if (BlockchainHandler.isBlockHashValid(this.blockchain[0])) {
+    if (BlockHelper.isBlockHashValid(this.blockchain[0])) {
       this.blockchain[0].transaction.data.validators.forEach((validator) => {
         this.validators.push(validator);
       });
     }
   }
 
-  static isBlockPreviousHashValid(previousBlock, block) {
-    if (previousBlock.hash === block.previousHash) {
-      return true;
-    }
-    return false;
-  }
-
   isBlockPreviousHashValid(block) {
-    return BlockchainHandler.isBlockPreviousHashValid(this.getLastBlock(), block);
+    return BlockHelper.isBlockPreviousHashValid(this.getLastBlock(), block);
   }
 
   getLastBlock() {
@@ -59,7 +45,7 @@ exports.BlockchainHandler = class BlockchainHandler {
       return;
     }
     newBlocks.forEach((block) => {
-      if (!BlockchainHandler.isBlockHashValid(block)) {
+      if (!BlockHelper.isBlockHashValid(block)) {
         console.log('Wrong hash');
         return;
       }
