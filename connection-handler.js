@@ -132,7 +132,7 @@ exports.ConnectionHandler = class ConnectionHandler {
     console.log(transaction);
     if (this.transactionHelper.isTransactionValid(transaction)) {
       console.log('Transaction added to pening');
-      ConnectionHandler.pushIfNotIn(transaction, this.pendingTransactions);
+      ConnectionHandler.pushTransactionIfNotIn(transaction, this.pendingTransactions);
       return true;
     }
     console.log('Invallid transaction');
@@ -191,6 +191,22 @@ exports.ConnectionHandler = class ConnectionHandler {
 
   static isNodesEqual(node1, node2) {
     return (node1.port === node2.port && node1.ip === node2.ip);
+  }
+
+  static isTransactionsEqual(transaction1, transaction2) {
+    return (JSON.stringify(transaction1) === JSON.stringify(transaction2));
+  }
+
+  static isTransactionsInArray(transaction1, array) {
+    return (array.some(
+      (transaction2) => ConnectionHandler.isTransactionsEqual(transaction1, transaction2),
+    ));
+  }
+
+  static pushTransactionIfNotIn(transaction, array) {
+    if (!ConnectionHandler.isTransactionsInArray(transaction, array)) {
+      array.push(transaction);
+    }
   }
 
   isNodeItself(node) {
