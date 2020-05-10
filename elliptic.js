@@ -10,6 +10,7 @@ exports.Elliptic = class Elliptic {
     this.senderKey = this.eddsa.keyFromSecret(this.senderPrivateKey);
     this.senderPublicKey = this.senderKey.getPublic('hex');
     this.validatorKey = this.eddsa.keyFromSecret(this.senderPrivateKey);
+    this.validatorPublicKey = this.validatorKey.getPublic('hex');
   }
 
   signTransaction(transaction) {
@@ -18,6 +19,17 @@ exports.Elliptic = class Elliptic {
     const transactionHash = Elliptic.getUnsignedTransactionHash(transaction);
     signedTransaction.sign = this.senderKey.sign(transactionHash).toHex();
     return signedTransaction;
+  }
+
+  signBlock(block) {
+    const signedBlock = block;
+    signedBlock.sign = this.validatorKey.sign(block.hash).toHex();
+    return signedBlock;
+  }
+
+  verifyBlockSign(block) {
+    const validatorKey = this.eddsa.keyFromPublic(block.validator, 'hex');
+    return validatorKey.verify(block.hash, block.sign);
   }
 
   static getUnsignedTransactionHash(transaction) {
@@ -52,5 +64,9 @@ exports.Elliptic = class Elliptic {
 
   setSenderPrivateKey() {
     this.senderPrivateKey = fs.readFileSync(Elliptic.getSenderPrivateKeyFile());
+  }
+
+  getValidatorPublicKey() {
+    return this.validatorPublicKey;
   }
 };

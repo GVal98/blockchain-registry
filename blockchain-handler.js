@@ -9,9 +9,20 @@ exports.BlockchainHandler = class BlockchainHandler {
     this.loadBlockchainFromFile();
     this.setValidators();
     const tx = this.transactionHelper.createTransaction('nodata');
-    this.sendTransaction(tx);
+    // this.sendTransaction(tx);
+    const block = this.createBlock([tx]);
+    console.log(JSON.stringify(block));
+    console.log(this.isBlockValid(block));
     setInterval(() => this.updateChain(), 3500);
     setInterval(() => this.updatePendingTransactions(), 3500);
+  }
+
+  createBlock(transactions) {
+    return this.blockHelper.createBlock(this.getLastBlock(), transactions);
+  }
+
+  isBlockValid(block) {
+    return this.blockHelper.isBlockValid(this.getLastBlock(), block);
   }
 
   sendTransaction(transaction) {
@@ -27,10 +38,6 @@ exports.BlockchainHandler = class BlockchainHandler {
     }
   }
 
-  isBlockPreviousHashValid(block) {
-    return BlockHelper.isBlockPreviousHashValid(this.getLastBlock(), block);
-  }
-
   getLastBlock() {
     return this.blockchain[this.blockchain.length - 1];
   }
@@ -44,13 +51,10 @@ exports.BlockchainHandler = class BlockchainHandler {
     if (newBlocks === null) {
       return;
     }
+    console.log(newBlocks);
     newBlocks.forEach((block) => {
-      if (!BlockHelper.isBlockHashValid(block)) {
-        console.log('Wrong hash');
-        return;
-      }
-      if (!this.isBlockPreviousHashValid(block)) {
-        console.log('Wrong previous hash');
+      if (!this.isBlockValid(block)) {
+        console.log('Block is invalid');
         return;
       }
       this.blockchain.push(block);

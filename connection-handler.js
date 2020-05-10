@@ -108,34 +108,34 @@ exports.ConnectionHandler = class ConnectionHandler {
 
   async sendTransaction(transaction) {
     if (!this.getNewTransaction(transaction)) {
-      console.log('Invalid transaction');
+      // console.log('Invalid transaction');
       return;
     }
 
-    console.log('Sending transaction:');
-    console.log(transaction);
+    // console.log('Sending transaction:');
+    // console.log(transaction);
     this.availableNodes.forEach(async (node) => {
-      console.log(`Sending transaction to: ${JSON.stringify(node)}`);
+      // console.log(`Sending transaction to: ${JSON.stringify(node)}`);
       const response = await Request.sendTransaction(node, transaction);
       if (response !== null) {
         if (response.result === true) {
-          console.log(`${JSON.stringify(node)}: Transaction added to pending`);
+          // console.log(`${JSON.stringify(node)}: Transaction added to pending`);
         } else {
-          console.log(`${JSON.stringify(node)}: Invalid transaction`);
+          // console.log(`${JSON.stringify(node)}: Invalid transaction`);
         }
       }
     });
   }
 
   getNewTransaction(transaction) {
-    console.log('New transaction:');
-    console.log(transaction);
+    // console.log('New transaction:');
+    // console.log(transaction);
     if (this.transactionHelper.isTransactionValid(transaction)) {
-      console.log('Transaction added to pening');
+      // console.log('Transaction added to pening');
       ConnectionHandler.pushTransactionIfNotIn(transaction, this.pendingTransactions);
       return true;
     }
-    console.log('Invallid transaction');
+    // console.log('Invallid transaction');
     return false;
   }
 
@@ -161,13 +161,13 @@ exports.ConnectionHandler = class ConnectionHandler {
 
   async getPendingTransactionsFromNodes() {
     this.availableNodes.forEach(async (node) => {
-      console.log(`Getting new transactions from: ${JSON.stringify(node)}`);
+      // console.log(`Getting new transactions from: ${JSON.stringify(node)}`);
       const response = await Request.getPendingTransactions(node);
-      console.log(response);
+      // /console.log(response);
       if (response !== null) {
         if (response.result.length > 0) {
           response.result.forEach((transaction) => {
-            console.log(transaction);
+            // console.log(transaction);
             this.getNewTransaction(transaction);
           });
         }
@@ -176,8 +176,8 @@ exports.ConnectionHandler = class ConnectionHandler {
   }
 
   getPendingTransactions() {
-    console.log('Pending transactions:');
-    console.log(this.pendingTransactions);
+    // console.log('Pending transactions:');
+    // console.log(this.pendingTransactions);
     return this.pendingTransactions;
   }
 

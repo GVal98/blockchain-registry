@@ -7,11 +7,38 @@ exports.BlockHelper = class BlockHelper {
   }
 
   static isBlockHashValid(block) {
-    const { hash, ...blockWithoutHash } = block;
-    if (block.hash === crypto.createHash('sha256').update(JSON.stringify(blockWithoutHash)).digest('hex')) {
+    if (block.hash === BlockHelper.calculateBlockHash(block)) {
       return true;
     }
     return false;
+  }
+
+  static calculateBlockHash(block) {
+    const { hash, sign, ...rawBlock } = block;
+    return crypto.createHash('sha256').update(JSON.stringify(rawBlock)).digest('hex');
+  }
+
+  isAllTransactionsValid(transactions) {
+    let isBlockTransactionsValid = true;
+    transactions.forEach((transaction) => {
+      if (!this.transactionHelper.isTransactionValid(transaction)) {
+        isBlockTransactionsValid = false;
+      }
+    });
+    return isBlockTransactionsValid;
+  }
+
+  isBlockSignValid(block) {
+    return this.elliptic.verifyBlockSign(block);
+  }
+
+  isBlockValid(previousBlock, block) {
+    return (
+      BlockHelper.isBlockHashValid(block)
+      && this.isAllTransactionsValid(block.transactions)
+      && this.isBlockSignValid(block)
+      && BlockHelper.isBlockPreviousHashValid(previousBlock, block)
+    );
   }
 
   static isBlockPreviousHashValid(previousBlock, block) {
@@ -19,5 +46,21 @@ exports.BlockHelper = class BlockHelper {
       return true;
     }
     return false;
+  }
+
+  createBlock(previousBlock, transactions) {
+    const block = {};
+    const validTransactions = [];
+    transactions.forEach((transaction) => {
+      if (this.transactionHelper.isTransactionValid(transaction)) {
+        validTransactions.push(transaction);
+      }
+    });
+    block.time = Date.now();
+    block.transactions = validTransactions;
+    block.validator = this.elliptic.getValidatorPublicKey();
+    block.previousHash = previousBlock.hash;
+    block.hash = BlockHelper.calculateBlockHash(block);
+    return this.elliptic.signBlock(block);
   }
 };
