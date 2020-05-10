@@ -36,6 +36,7 @@ exports.Server = class Server {
     this.addRoute('/getNodes', (json) => this.getNodes(json));
     this.addRoute('/getBlocks', (json) => this.getBlocks(json));
     this.addRoute('/sendTransaction', (json) => this.connectionHandler.getNewTransaction(json));
+    this.addRoute('/getPendingTransactions', () => this.connectionHandler.getPendingTransactions());
   }
 
   getBlocks(json) {

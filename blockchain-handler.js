@@ -10,6 +10,7 @@ exports.BlockchainHandler = class BlockchainHandler {
     const tx = this.transactionHelper.createTransaction('nodata');
     this.sendTransaction(tx);
     setInterval(() => this.updateChain(), 3500);
+    setInterval(() => this.updatePendingTransactions(), 3500);
   }
 
   static isBlockHashValid(block) {
@@ -46,6 +47,10 @@ exports.BlockchainHandler = class BlockchainHandler {
 
   getLastBlock() {
     return this.blockchain[this.blockchain.length - 1];
+  }
+
+  async updatePendingTransactions() {
+    this.connectionHandler.getPendingTransactionsFromNodes();
   }
 
   async updateChain() {

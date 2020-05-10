@@ -107,6 +107,11 @@ exports.ConnectionHandler = class ConnectionHandler {
   }
 
   async sendTransaction(transaction) {
+    if (!this.getNewTransaction(transaction)) {
+      console.log('Invalid transaction');
+      return;
+    }
+
     console.log('Sending transaction:');
     console.log(transaction);
     this.availableNodes.forEach(async (node) => {
@@ -126,9 +131,11 @@ exports.ConnectionHandler = class ConnectionHandler {
     console.log('New transaction:');
     console.log(transaction);
     if (this.transactionHelper.isTransactionValid(transaction)) {
+      console.log('Transaction added to pening');
       ConnectionHandler.pushIfNotIn(transaction, this.pendingTransactions);
       return true;
     }
+    console.log('Invallid transaction');
     return false;
   }
 
@@ -152,6 +159,27 @@ exports.ConnectionHandler = class ConnectionHandler {
     }
   }
 
+  async getPendingTransactionsFromNodes() {
+    this.availableNodes.forEach(async (node) => {
+      console.log(`Getting new transactions from: ${JSON.stringify(node)}`);
+      const response = await Request.getPendingTransactions(node);
+      console.log(response);
+      if (response !== null) {
+        if (response.result.length > 0) {
+          response.result.forEach((transaction) => {
+            console.log(transaction);
+            this.getNewTransaction(transaction);
+          });
+        }
+      }
+    });
+  }
+
+  getPendingTransactions() {
+    console.log('Pending transactions:');
+    console.log(this.pendingTransactions);
+    return this.pendingTransactions;
+  }
 
   pushToAllNodes(node) {
     ConnectionHandler.pushIfNotIn(node, this.allNodes);
