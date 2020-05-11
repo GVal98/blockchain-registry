@@ -9,12 +9,11 @@ exports.BlockchainHandler = class BlockchainHandler {
     this.loadBlockchainFromFile();
     this.setValidators();
     const tx = this.transactionHelper.createTransaction('nodata');
-    // this.sendTransaction(tx);
-    const block = this.createBlock([tx]);
-    console.log(JSON.stringify(block));
-    console.log(this.isBlockValid(block));
+    this.sendTransaction(tx);
+    // const block = this.createBlock([tx]);
+    // console.log(JSON.stringify(block));
+    // console.log(this.isBlockValid(block));
     setInterval(() => this.updateChain(), 3500);
-    setInterval(() => this.updatePendingTransactions(), 3500);
   }
 
   createBlock(transactions) {
@@ -40,10 +39,6 @@ exports.BlockchainHandler = class BlockchainHandler {
 
   getLastBlock() {
     return this.blockchain[this.blockchain.length - 1];
-  }
-
-  async updatePendingTransactions() {
-    this.connectionHandler.getPendingTransactionsFromNodes();
   }
 
   async updateChain() {

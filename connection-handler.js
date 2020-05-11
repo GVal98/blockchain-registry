@@ -46,13 +46,14 @@ exports.ConnectionHandler = class ConnectionHandler {
     const getHeightPromises = [];
     const updatedAvailableNodes = [];
     this.availableNodes.forEach(async (node) => {
-      const requestgetHeight = Request.getHeight(node);
+      const requestgetHeight = Request.getPendingTransactions(node);
       getHeightPromises.push(requestgetHeight);
       // console.log(`Updating: ${JSON.stringify(node)}`);
       const response = await requestgetHeight;
       if (response !== null) {
-        const updatedNode = ConnectionHandler.getFullNode(node, response.result);
+        const updatedNode = ConnectionHandler.getFullNode(node, response.result.height);
         updatedAvailableNodes.push(updatedNode);
+        this.addNewPendingTransactions(response.result.pendingTransactions);
         // console.log(`Updated: ${JSON.stringify(updatedNode)}`);
       }
     });
@@ -63,6 +64,14 @@ exports.ConnectionHandler = class ConnectionHandler {
     return ConnectionHandler.findHighestNodeInArray(this.availableNodes);
   }
 
+  addNewPendingTransactions(pendingTransactions) {
+    if (pendingTransactions.length > 0) {
+      pendingTransactions.forEach((transaction) => {
+        // console.log(transaction);
+        this.getNewTransaction(transaction);
+      });
+    }
+  }
 
   static findHighestNodeInArray(nodes) {
     if (nodes.length === 0) {
@@ -89,9 +98,11 @@ exports.ConnectionHandler = class ConnectionHandler {
       this.pushToAllNodes(node);
       if (response) {
         // console.log(`Available: ${JSON.stringify(node)}`);
-        ConnectionHandler.pushIfNotIn(
-          ConnectionHandler.getFullNode(node, response.result.height), availableNodes,
-        );
+        const fullNode = ConnectionHandler.getFullNode(node, response.result.height);
+        if (!ConnectionHandler.isInArray(fullNode, availableNodes)) {
+          availableNodes.push(fullNode);
+          this.addNewPendingTransactions(response.result.pendingTransactions);
+        }
         getNodesPromises.push(
           this.getAvailableNodes(
             getNodesPromises,
@@ -128,14 +139,11 @@ exports.ConnectionHandler = class ConnectionHandler {
   }
 
   getNewTransaction(transaction) {
-    // console.log('New transaction:');
-    // console.log(transaction);
     if (this.transactionHelper.isTransactionValid(transaction)) {
-      // console.log('Transaction added to pening');
       ConnectionHandler.pushTransactionIfNotIn(transaction, this.pendingTransactions);
       return true;
     }
-    // console.log('Invallid transaction');
+    console.log('Invallid transaction');
     return false;
   }
 
@@ -157,22 +165,6 @@ exports.ConnectionHandler = class ConnectionHandler {
     if (!ConnectionHandler.isInArray(targetNode, array)) {
       array.push(targetNode);
     }
-  }
-
-  async getPendingTransactionsFromNodes() {
-    this.availableNodes.forEach(async (node) => {
-      // console.log(`Getting new transactions from: ${JSON.stringify(node)}`);
-      const response = await Request.getPendingTransactions(node);
-      // /console.log(response);
-      if (response !== null) {
-        if (response.result.length > 0) {
-          response.result.forEach((transaction) => {
-            // console.log(transaction);
-            this.getNewTransaction(transaction);
-          });
-        }
-      }
-    });
   }
 
   getPendingTransactions() {
@@ -206,7 +198,12 @@ exports.ConnectionHandler = class ConnectionHandler {
   static pushTransactionIfNotIn(transaction, array) {
     if (!ConnectionHandler.isTransactionsInArray(transaction, array)) {
       array.push(transaction);
+      console.log('Transaction added to pending:');
+      console.log(transaction);
+      return true;
     }
+    console.log('Transaction is already in pending');
+    return false;
   }
 
   isNodeItself(node) {

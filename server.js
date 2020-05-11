@@ -32,11 +32,10 @@ exports.Server = class Server {
   }
 
   addRoutes() {
-    this.addRoute('/getHeight', () => this.blockchainHandler.getHeight());
     this.addRoute('/getNodes', (json) => this.getNodes(json));
     this.addRoute('/getBlocks', (json) => this.getBlocks(json));
     this.addRoute('/sendTransaction', (json) => this.connectionHandler.getNewTransaction(json));
-    this.addRoute('/getPendingTransactions', () => this.connectionHandler.getPendingTransactions());
+    this.addRoute('/getPendingTransactions', () => this.getPendingTransactions());
   }
 
   getBlocks(json) {
@@ -46,7 +45,15 @@ exports.Server = class Server {
   getNodes(json) {
     return {
       height: this.blockchainHandler.getHeight(),
+      pendingTransactions: this.connectionHandler.getPendingTransactions(),
       nodes: this.connectionHandler.getNodes(json),
+    };
+  }
+
+  getPendingTransactions() {
+    return {
+      height: this.blockchainHandler.getHeight(),
+      pendingTransactions: this.connectionHandler.getPendingTransactions(),
     };
   }
 
