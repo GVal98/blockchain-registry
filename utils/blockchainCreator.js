@@ -23,7 +23,6 @@ class BlockchainCreator {
 
   static createGenesisBlock(genesisTransaction) {
     const block = {};
-    block.previousHash = '0000000000000000000000000000000000000000000000000000000000000000';
     block.transaction = genesisTransaction;
     block.hash = crypto.createHash('sha256').update(JSON.stringify(block)).digest('hex');
     return block;

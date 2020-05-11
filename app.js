@@ -12,14 +12,15 @@ class App {
     this.blockHelper = new BlockHelper(this.elliptic, this.transactionHelper);
 
     this.connectionHandler = new ConnectionHandler(this.transactionHelper);
+    this.blockchainHandler = new BlockchainHandler(this.transactionHelper, this.blockHelper);
+
+    this.connectionHandler.setBlockchainHandler(this.blockchainHandler);
+    this.blockchainHandler.setConnectionHandler(this.connectionHandler);
+
     await this.connectionHandler.init();
     console.log('Connection handler started');
 
-    this.blockchainHandler = new BlockchainHandler(
-      this.connectionHandler,
-      this.transactionHelper,
-      this.blockHelper,
-    );
+    this.blockchainHandler.init();
     console.log('Blockchain handler started');
 
     this.Server = new Server(this.blockchainHandler, this.connectionHandler);

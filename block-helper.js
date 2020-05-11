@@ -6,6 +6,10 @@ exports.BlockHelper = class BlockHelper {
     this.transactionHelper = transactionHelper;
   }
 
+  getValidatorPublicKey() {
+    return this.elliptic.getValidatorPublicKey();
+  }
+
   static isBlockHashValid(block) {
     if (block.hash === BlockHelper.calculateBlockHash(block)) {
       return true;
@@ -18,10 +22,13 @@ exports.BlockHelper = class BlockHelper {
     return crypto.createHash('sha256').update(JSON.stringify(rawBlock)).digest('hex');
   }
 
-  isAllTransactionsValid(transactions) {
+  isAllTransactionsValid(allTransactions, transactions) {
+    if (transactions.length <= 0) {
+      return false;
+    }
     let isBlockTransactionsValid = true;
     transactions.forEach((transaction) => {
-      if (!this.transactionHelper.isTransactionValid(transaction)) {
+      if (!this.transactionHelper.isTransactionValid(allTransactions, transaction)) {
         isBlockTransactionsValid = false;
       }
     });
@@ -32,12 +39,13 @@ exports.BlockHelper = class BlockHelper {
     return this.elliptic.verifyBlockSign(block);
   }
 
-  isBlockValid(previousBlock, block) {
+  isBlockValid(allTransactions, validators, previousBlock, block) {
     return (
       BlockHelper.isBlockHashValid(block)
-      && this.isAllTransactionsValid(block.transactions)
+      && this.isAllTransactionsValid(allTransactions, block.transactions)
       && this.isBlockSignValid(block)
       && BlockHelper.isBlockPreviousHashValid(previousBlock, block)
+      && BlockHelper.canValidatorSignBlockForTime(validators, block.validator, block.time)
     );
   }
 
@@ -48,11 +56,41 @@ exports.BlockHelper = class BlockHelper {
     return false;
   }
 
-  createBlock(previousBlock, transactions) {
+  static getValidatorForTime(validators, time) {
+    return validators[Math.round(time / 1000 / 5) % validators.length];
+  }
+
+  canSignBlockNow(validators) {
+    return BlockHelper.canValidatorSignBlockForTime(
+      validators,
+      this.getValidatorPublicKey(),
+      Date.now(),
+    );
+  }
+
+  static canValidatorSignBlockForTime(validators, validator, time) {
+    return (BlockHelper.getValidatorForTime(validators, time) === validator);
+  }
+
+  createBlockIfTime(allTransactions, validators, previousBlock, transactions) {
+    if (!this.canSignBlockNow(validators)) {
+      return false;
+    }
+    if (transactions.length <= 0) {
+      return false;
+    }
+    const block = this.createBlock(allTransactions, previousBlock, transactions);
+    if (this.isBlockValid(allTransactions, validators, previousBlock, block)) {
+      return block;
+    }
+    return false;
+  }
+
+  createBlock(allTransactions, previousBlock, transactions) {
     const block = {};
     const validTransactions = [];
     transactions.forEach((transaction) => {
-      if (this.transactionHelper.isTransactionValid(transaction)) {
+      if (this.transactionHelper.isTransactionValid(allTransactions, transaction)) {
         validTransactions.push(transaction);
       }
     });

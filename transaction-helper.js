@@ -12,7 +12,18 @@ exports.TransactionHelper = class TransactionHelper {
     return transaction;
   }
 
-  isTransactionValid(transaction) {
-    return this.elliptic.verifyTransactionSign(transaction);
+  isTransactionValid(allTransactions, transaction) {
+    return (this.elliptic.verifyTransactionSign(transaction)
+     && !TransactionHelper.isTransactionsInArray(transaction, allTransactions));
+  }
+
+  static isTransactionsEqual(transaction1, transaction2) {
+    return (transaction1.hash === transaction2.hash);
+  }
+
+  static isTransactionsInArray(transaction1, array) {
+    return (array.some(
+      (transaction2) => TransactionHelper.isTransactionsEqual(transaction1, transaction2),
+    ));
   }
 };

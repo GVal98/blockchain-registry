@@ -6,7 +6,7 @@ exports.Request = class Request {
       needle.post(
         Request.getURL(node, func),
         data,
-        { open_timeout: 3000, json: true },
+        { open_timeout: 1000, json: true },
         (error, response) => {
           if (error) {
             return resolve(null);

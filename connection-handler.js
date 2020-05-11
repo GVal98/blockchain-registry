@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { Request } = require('./request');
+const { TransactionHelper } = require('./transaction-helper');
 
 exports.ConnectionHandler = class ConnectionHandler {
   constructor(transactionHelper) {
@@ -11,6 +12,10 @@ exports.ConnectionHandler = class ConnectionHandler {
     [, , this.nodeIP] = process.argv;
     [, , , this.nodePort] = process.argv;
     this.node = { ip: this.nodeIP, port: parseInt(this.nodePort, 10) };
+  }
+
+  setBlockchainHandler(blockchainHandler) {
+    this.blockchainHandler = blockchainHandler;
   }
 
   async init() {
@@ -139,7 +144,10 @@ exports.ConnectionHandler = class ConnectionHandler {
   }
 
   getNewTransaction(transaction) {
-    if (this.transactionHelper.isTransactionValid(transaction)) {
+    if (this.transactionHelper.isTransactionValid(
+      this.blockchainHandler.getAllTransactions(),
+      transaction,
+    )) {
       ConnectionHandler.pushTransactionIfNotIn(transaction, this.pendingTransactions);
       return true;
     }
@@ -167,6 +175,12 @@ exports.ConnectionHandler = class ConnectionHandler {
     }
   }
 
+  removePendingTransactions(transactions) {
+    this.pendingTransactions = this.pendingTransactions.filter(
+      (transaction) => !TransactionHelper.isTransactionsInArray(transaction, transactions),
+    );
+  }
+
   getPendingTransactions() {
     // console.log('Pending transactions:');
     // console.log(this.pendingTransactions);
@@ -185,25 +199,17 @@ exports.ConnectionHandler = class ConnectionHandler {
     return (node1.port === node2.port && node1.ip === node2.ip);
   }
 
-  static isTransactionsEqual(transaction1, transaction2) {
-    return (JSON.stringify(transaction1) === JSON.stringify(transaction2));
-  }
-
-  static isTransactionsInArray(transaction1, array) {
-    return (array.some(
-      (transaction2) => ConnectionHandler.isTransactionsEqual(transaction1, transaction2),
-    ));
-  }
-
   static pushTransactionIfNotIn(transaction, array) {
-    if (!ConnectionHandler.isTransactionsInArray(transaction, array)) {
-      array.push(transaction);
-      console.log('Transaction added to pending:');
-      console.log(transaction);
-      return true;
+    if (TransactionHelper.isTransactionsInArray(transaction, array)) {
+      console.log('Transaction is already in pending');
+      return false;
     }
-    console.log('Transaction is already in pending');
-    return false;
+    // console.log('ALL TRANSACTIONS:');
+    // console.log(this.blockchainHandler.getAllTransactions());
+    array.push(transaction);
+    console.log('Transaction added to pending:');
+    console.log(transaction);
+    return true;
   }
 
   isNodeItself(node) {

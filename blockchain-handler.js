@@ -2,30 +2,64 @@ const fs = require('fs');
 const { BlockHelper } = require('./block-helper');
 
 exports.BlockchainHandler = class BlockchainHandler {
-  constructor(connectionHandler, transactionHelper, blockHelper) {
-    this.connectionHandler = connectionHandler;
+  constructor(transactionHelper, blockHelper) {
     this.transactionHelper = transactionHelper;
     this.blockHelper = blockHelper;
     this.loadBlockchainFromFile();
     this.setValidators();
-    const tx = this.transactionHelper.createTransaction('nodata');
-    this.sendTransaction(tx);
-    // const block = this.createBlock([tx]);
-    // console.log(JSON.stringify(block));
-    // console.log(this.isBlockValid(block));
-    setInterval(() => this.updateChain(), 3500);
   }
 
-  createBlock(transactions) {
-    return this.blockHelper.createBlock(this.getLastBlock(), transactions);
+  setConnectionHandler(connectionHandler) {
+    this.connectionHandler = connectionHandler;
+  }
+
+  init() {
+    const tx = this.transactionHelper.createTransaction('nodata');
+    this.sendTransaction(tx);
+    setInterval(() => this.updateChain(), 2000);
+    setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
+    // setInterval(() => console.log(this.getPendingTransactions()), 1000);
   }
 
   isBlockValid(block) {
-    return this.blockHelper.isBlockValid(this.getLastBlock(), block);
+    return this.blockHelper.isBlockValid(
+      this.getAllTransactions(),
+      this.validators,
+      this.getLastBlock(),
+      block,
+    );
+  }
+
+  addNewBlockFromPendingTransactions() {
+    const block = this.createNewBlockFromPendingTransactions();
+    if (block) {
+      this.addNewBlock(block);
+    }
+  }
+
+  getAllTransactions() {
+    let transactions = [];
+    for (let i = 1; i < this.blockchain.length; i += 1) {
+      transactions = transactions.concat(this.blockchain[i].transactions);
+    }
+    return transactions;
+  }
+
+  createNewBlockFromPendingTransactions() {
+    return this.blockHelper.createBlockIfTime(
+      this.getAllTransactions(),
+      this.validators,
+      this.getLastBlock(),
+      this.getPendingTransactions(),
+    );
   }
 
   sendTransaction(transaction) {
     this.connectionHandler.sendTransaction(transaction);
+  }
+
+  getPendingTransactions() {
+    return this.connectionHandler.getPendingTransactions();
   }
 
   setValidators() {
@@ -46,16 +80,22 @@ exports.BlockchainHandler = class BlockchainHandler {
     if (newBlocks === null) {
       return;
     }
-    console.log(newBlocks);
     newBlocks.forEach((block) => {
       if (!this.isBlockValid(block)) {
         console.log('Block is invalid');
         return;
       }
-      this.blockchain.push(block);
-      console.log('New block:');
-      console.log(block);
+      this.addNewBlock(block);
     });
+    // console.log('Chain:');
+    // console.log(this.blockchain);
+  }
+
+  addNewBlock(block) {
+    this.connectionHandler.removePendingTransactions(block.transactions);
+    this.blockchain.push(block);
+    console.log('New block:');
+    console.log(block);
     console.log('Chain:');
     console.log(this.blockchain);
   }

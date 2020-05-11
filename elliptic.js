@@ -9,15 +9,15 @@ exports.Elliptic = class Elliptic {
     this.eddsa = new EdDSA('ed25519');
     this.senderKey = this.eddsa.keyFromSecret(this.senderPrivateKey);
     this.senderPublicKey = this.senderKey.getPublic('hex');
-    this.validatorKey = this.eddsa.keyFromSecret(this.senderPrivateKey);
+    this.validatorKey = this.eddsa.keyFromSecret(this.validatorPrivateKey);
     this.validatorPublicKey = this.validatorKey.getPublic('hex');
   }
 
   signTransaction(transaction) {
     const signedTransaction = transaction;
     signedTransaction.sender = this.senderPublicKey;
-    const transactionHash = Elliptic.getUnsignedTransactionHash(transaction);
-    signedTransaction.sign = this.senderKey.sign(transactionHash).toHex();
+    signedTransaction.hash = Elliptic.getUnsignedTransactionHash(transaction);
+    signedTransaction.sign = this.senderKey.sign(signedTransaction.hash).toHex();
     return signedTransaction;
   }
 
@@ -39,6 +39,7 @@ exports.Elliptic = class Elliptic {
   static getUnsignedTransaction(transaction) {
     const unsignedTransaction = { ...transaction };
     delete unsignedTransaction.sign;
+    delete unsignedTransaction.hash;
     return unsignedTransaction;
   }
 
@@ -47,6 +48,9 @@ exports.Elliptic = class Elliptic {
     const transactionHash = Elliptic.getUnsignedTransactionHash(
       Elliptic.getUnsignedTransaction(transaction),
     );
+    if (transaction.hash !== transactionHash) {
+      return false;
+    }
     return senderKey.verify(transactionHash, transaction.sign);
   }
 
@@ -59,11 +63,11 @@ exports.Elliptic = class Elliptic {
   }
 
   setValidatorPrivateKey() {
-    this.validatorPrivateKey = fs.readFileSync(Elliptic.getValidatorPrivateKeyFile());
+    this.validatorPrivateKey = fs.readFileSync(Elliptic.getValidatorPrivateKeyFile(), 'utf-8');
   }
 
   setSenderPrivateKey() {
-    this.senderPrivateKey = fs.readFileSync(Elliptic.getSenderPrivateKeyFile());
+    this.senderPrivateKey = fs.readFileSync(Elliptic.getSenderPrivateKeyFile(), 'utf-8');
   }
 
   getValidatorPublicKey() {
