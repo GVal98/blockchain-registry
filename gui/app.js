@@ -20,9 +20,9 @@ class App {
     this.connectionHandler = new ConnectionHandler(this.transactionHelper, `${this.appPath}/nodes.json`);
     this.blockchainHandler = new BlockchainHandler(this.transactionHelper, this.blockHelper, `${this.appPath}/blockchain.json`);
 
-    /*this.connectionHandler.setBlockchainHandler(this.blockchainHandler);
+    this.connectionHandler.setBlockchainHandler(this.blockchainHandler);
     this.blockchainHandler.setConnectionHandler(this.connectionHandler);
-
+/*
     await this.connectionHandler.init();
     console.log('Connection handler started');
 
