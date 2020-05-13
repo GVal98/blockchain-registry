@@ -52,7 +52,16 @@ exports.BlockHelper = class BlockHelper {
       && this.isBlockSignValid(block)
       && BlockHelper.isBlockPreviousHashValid(previousBlock, block)
       && BlockHelper.canValidatorSignBlockForTime(validators, block.validator, block.time)
+      && BlockHelper.isBlockTimeValid(previousBlock, block)
     );
+  }
+
+  static isBlockTimeValid(previousBlock, block) {
+    if (block.time > previousBlock.time && block.time < Date.now()) {
+      return true;
+    }
+    console.log('Time invalid');
+    return false;
   }
 
   static isBlockPreviousHashValid(previousBlock, block) {
