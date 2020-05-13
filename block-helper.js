@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { TransactionHelper } = require('./transaction-helper');
 
 exports.BlockHelper = class BlockHelper {
   constructor(elliptic, transactionHelper) {
@@ -24,6 +25,11 @@ exports.BlockHelper = class BlockHelper {
 
   isAllTransactionsValid(allTransactions, transactions) {
     if (transactions.length <= 0) {
+      return false;
+    }
+    const uniqTranasctions = [...new Set(transactions.map((transaction) => transaction.hash))];
+    if (uniqTranasctions.length !== transactions.length) {
+      console.log(`${uniqTranasctions.length} !== ${transactions.length}`);
       return false;
     }
     let isBlockTransactionsValid = true;
@@ -90,7 +96,8 @@ exports.BlockHelper = class BlockHelper {
     const block = {};
     const validTransactions = [];
     transactions.forEach((transaction) => {
-      if (this.transactionHelper.isTransactionValid(allTransactions, transaction)) {
+      if (this.transactionHelper.isTransactionValid(allTransactions, transaction)
+      && !TransactionHelper.isTransactionsInArray(transaction, validTransactions)) {
         validTransactions.push(transaction);
       }
     });
