@@ -17,7 +17,7 @@ class App {
     this.transactionHelper = new TransactionHelper(this.elliptic);
     this.blockHelper = new BlockHelper(this.elliptic, this.transactionHelper);
 
-    this.connectionHandler = new ConnectionHandler(this.transactionHelper, `${this.appPath}/nodes.json`);
+    this.connectionHandler = new ConnectionHandler(this.transactionHelper, `${this.appPath}/nodes.json`, electronApp);
     this.blockchainHandler = new BlockchainHandler(this.transactionHelper, this.blockHelper, `${this.appPath}/blockchain.json`);
 
     this.connectionHandler.setBlockchainHandler(this.blockchainHandler);

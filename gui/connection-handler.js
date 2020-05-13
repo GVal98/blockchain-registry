@@ -3,7 +3,7 @@ const { Request } = require('./request');
 const { TransactionHelper } = require('./transaction-helper');
 
 exports.ConnectionHandler = class ConnectionHandler {
-  constructor(transactionHelper, nodesFile) {
+  constructor(transactionHelper, nodesFile, electronApp) {
     this.nodesFile = nodesFile;
     this.loadNodesFromFile();
     this.availableNodes = [];
@@ -11,6 +11,7 @@ exports.ConnectionHandler = class ConnectionHandler {
     this.transactionHelper = transactionHelper;
     this.pendingTransactions = [];
     this.node = false;
+    this.electronApp = electronApp;
     //[, , this.nodeIP] = process.argv;
     //[, , , this.nodePort] = process.argv;
     //this.node = { ip: this.nodeIP, port: parseInt(this.nodePort, 10) };
@@ -189,6 +190,7 @@ exports.ConnectionHandler = class ConnectionHandler {
     this.getAvailableNodes(getNodesPromises, pendingNodes, targetNodes, availableNodes);
     await Promise.all(getNodesPromises);
     this.availableNodes = availableNodes;
+    this.electronApp.updateAvailableNodes(availableNodes);
     // this.printNodesStatus();
   }
 
