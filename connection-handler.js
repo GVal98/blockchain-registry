@@ -145,6 +145,7 @@ exports.ConnectionHandler = class ConnectionHandler {
 
   getNewTransaction(transaction) {
     if (this.transactionHelper.isTransactionValid(
+      this.blockchainHandler.getSenders(),
       this.blockchainHandler.getAllTransactions(),
       transaction,
     )) {

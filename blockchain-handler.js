@@ -7,6 +7,7 @@ exports.BlockchainHandler = class BlockchainHandler {
     this.blockHelper = blockHelper;
     this.loadBlockchainFromFile();
     this.setValidators();
+    this.setSenders();
   }
 
   setConnectionHandler(connectionHandler) {
@@ -23,6 +24,7 @@ exports.BlockchainHandler = class BlockchainHandler {
 
   isBlockValid(block) {
     return this.blockHelper.isBlockValid(
+      this.senders,
       this.getAllTransactions(),
       this.validators,
       this.getLastBlock(),
@@ -45,8 +47,13 @@ exports.BlockchainHandler = class BlockchainHandler {
     return transactions;
   }
 
+  getSenders() {
+    return this.senders;
+  }
+
   createNewBlockFromPendingTransactions() {
     return this.blockHelper.createBlockIfTime(
+      this.senders,
       this.getAllTransactions(),
       this.validators,
       this.getLastBlock(),
@@ -65,8 +72,17 @@ exports.BlockchainHandler = class BlockchainHandler {
   setValidators() {
     this.validators = [];
     if (BlockHelper.isBlockHashValid(this.blockchain[0])) {
-      this.blockchain[0].transaction.data.validators.forEach((validator) => {
+      this.blockchain[0].transactions[0].data.validators.forEach((validator) => {
         this.validators.push(validator);
+      });
+    }
+  }
+
+  setSenders() {
+    this.senders = [];
+    if (BlockHelper.isBlockHashValid(this.blockchain[0])) {
+      this.blockchain[0].transactions[0].data.senders.forEach((sender) => {
+        this.senders.push(sender);
       });
     }
   }

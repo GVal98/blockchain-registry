@@ -12,9 +12,14 @@ exports.TransactionHelper = class TransactionHelper {
     return transaction;
   }
 
-  isTransactionValid(allTransactions, transaction) {
+  isTransactionValid(senders, allTransactions, transaction) {
     return (this.elliptic.verifyTransactionSign(transaction)
-     && !TransactionHelper.isTransactionsInArray(transaction, allTransactions));
+     && !TransactionHelper.isTransactionsInArray(transaction, allTransactions)
+     && TransactionHelper.isSenderValid(transaction.sender, senders));
+  }
+
+  static isSenderValid(sender, senders) {
+    return senders.includes(sender);
   }
 
   static isTransactionsEqual(transaction1, transaction2) {

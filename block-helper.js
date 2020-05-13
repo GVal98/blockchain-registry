@@ -23,7 +23,7 @@ exports.BlockHelper = class BlockHelper {
     return crypto.createHash('sha256').update(JSON.stringify(rawBlock)).digest('hex');
   }
 
-  isAllTransactionsValid(allTransactions, transactions) {
+  isAllTransactionsValid(senders, allTransactions, transactions) {
     if (transactions.length <= 0) {
       return false;
     }
@@ -34,7 +34,7 @@ exports.BlockHelper = class BlockHelper {
     }
     let isBlockTransactionsValid = true;
     transactions.forEach((transaction) => {
-      if (!this.transactionHelper.isTransactionValid(allTransactions, transaction)) {
+      if (!this.transactionHelper.isTransactionValid(senders, allTransactions, transaction)) {
         isBlockTransactionsValid = false;
       }
     });
@@ -45,10 +45,10 @@ exports.BlockHelper = class BlockHelper {
     return this.elliptic.verifyBlockSign(block);
   }
 
-  isBlockValid(allTransactions, validators, previousBlock, block) {
+  isBlockValid(senders, allTransactions, validators, previousBlock, block) {
     return (
       BlockHelper.isBlockHashValid(block)
-      && this.isAllTransactionsValid(allTransactions, block.transactions)
+      && this.isAllTransactionsValid(senders, allTransactions, block.transactions)
       && this.isBlockSignValid(block)
       && BlockHelper.isBlockPreviousHashValid(previousBlock, block)
       && BlockHelper.canValidatorSignBlockForTime(validators, block.validator, block.time)
@@ -87,25 +87,25 @@ exports.BlockHelper = class BlockHelper {
     return (BlockHelper.getValidatorForTime(validators, time) === validator);
   }
 
-  createBlockIfTime(allTransactions, validators, previousBlock, transactions) {
+  createBlockIfTime(senders, allTransactions, validators, previousBlock, transactions) {
     if (!this.canSignBlockNow(validators)) {
       return false;
     }
     if (transactions.length <= 0) {
       return false;
     }
-    const block = this.createBlock(allTransactions, previousBlock, transactions);
-    if (this.isBlockValid(allTransactions, validators, previousBlock, block)) {
+    const block = this.createBlock(senders, allTransactions, previousBlock, transactions);
+    if (this.isBlockValid(senders, allTransactions, validators, previousBlock, block)) {
       return block;
     }
     return false;
   }
 
-  createBlock(allTransactions, previousBlock, transactions) {
+  createBlock(senders, allTransactions, previousBlock, transactions) {
     const block = {};
     const validTransactions = [];
     transactions.forEach((transaction) => {
-      if (this.transactionHelper.isTransactionValid(allTransactions, transaction)
+      if (this.transactionHelper.isTransactionValid(senders, allTransactions, transaction)
       && !TransactionHelper.isTransactionsInArray(transaction, validTransactions)) {
         validTransactions.push(transaction);
       }
