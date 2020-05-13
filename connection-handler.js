@@ -7,6 +7,7 @@ exports.ConnectionHandler = class ConnectionHandler {
     this.setNodesFile();
     this.loadNodesFromFile();
     this.availableNodes = [];
+    this.badNodes = [];
     this.transactionHelper = transactionHelper;
     this.pendingTransactions = [];
     [, , this.nodeIP] = process.argv;
@@ -23,31 +24,37 @@ exports.ConnectionHandler = class ConnectionHandler {
     setInterval(() => this.getAvailableNodesFull(this.allNodes), 5000);
   }
 
-  async getNewBlocks(currentHeight) {
-    if (this.availableNodes.length === 0) {
-      return null;
-    }
-    const highestNode = await this.getHighestNode();
-    if (highestNode === null) {
-      return null;
-    }
-    if (currentHeight >= highestNode.height) {
-      console.log('Blockhain is already updated');
-      return null;
-    }
+  addBadNode(badNode) {
+    ConnectionHandler.pushIfNotIn(badNode, this.badNodes);
+    console.log('BAD:');
+    console.log(this.badNodes);
+    this.availableNodes = this.availableNodes.filter(
+      (node) => !ConnectionHandler.isNodesEqual(node, badNode),
+    );
+    console.log('AVAL:');
+    console.log(this.availableNodes);
+  }
+
+  static async getNewBlocks(highestNode, currentHeight) {
     console.log(`Updating from: ${JSON.stringify(highestNode)}`);
     const newBlocks = await ConnectionHandler.downloadNewBlocks(highestNode, currentHeight);
     // console.log('New blocks:');
     // console.log(newBlocks);
-    return newBlocks;
+    if (newBlocks !== null) {
+      return newBlocks.result;
+    }
+    return null;
   }
 
   static async downloadNewBlocks(node, currentHeight) {
     const newBlocks = await Request.getBlocks(node, currentHeight + 1, node.height);
-    return newBlocks.result;
+    return newBlocks;
   }
 
   async getHighestNode() {
+    if (this.availableNodes.length === 0) {
+      return null;
+    }
     const getHeightPromises = [];
     const updatedAvailableNodes = [];
     this.availableNodes.forEach(async (node) => {
@@ -104,7 +111,8 @@ exports.ConnectionHandler = class ConnectionHandler {
       if (response) {
         // console.log(`Available: ${JSON.stringify(node)}`);
         const fullNode = ConnectionHandler.getFullNode(node, response.result.height);
-        if (!ConnectionHandler.isInArray(fullNode, availableNodes)) {
+        if (!ConnectionHandler.isInArray(fullNode, availableNodes)
+         && !ConnectionHandler.isInArray(fullNode, this.badNodes)) {
           availableNodes.push(fullNode);
           this.addNewPendingTransactions(response.result.pendingTransactions);
         }

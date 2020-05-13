@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { BlockHelper } = require('./block-helper');
+const { ConnectionHandler } = require('./connection-handler');
 
 exports.BlockchainHandler = class BlockchainHandler {
   constructor(transactionHelper, blockHelper) {
@@ -15,8 +16,8 @@ exports.BlockchainHandler = class BlockchainHandler {
   }
 
   init() {
-    const tx = this.transactionHelper.createTransaction('nodata');
-    this.sendTransaction(tx);
+    // const tx = this.transactionHelper.createTransaction('nodata');
+    // this.sendTransaction(tx);
     setInterval(() => this.updateChain(), 2000);
     setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
     // setInterval(() => console.log(this.getPendingTransactions()), 1000);
@@ -92,7 +93,35 @@ exports.BlockchainHandler = class BlockchainHandler {
   }
 
   async updateChain() {
-    const newBlocks = await this.connectionHandler.getNewBlocks(this.getHeight());
+    console.log('Updating chain');
+    const maxNode = await this.connectionHandler.getHighestNode();
+    if (maxNode === null) {
+      console.log('No nodes available');
+      return;
+    }
+
+    if (this.getHeight() >= maxNode.height) {
+      console.log('Blockhain is already updated');
+      return;
+    }
+
+    const newBlocks = await ConnectionHandler.getNewBlocks(maxNode, this.getHeight());
+    if (newBlocks === null) {
+      this.updateChain();
+      return;
+    }
+    newBlocks.forEach((block) => {
+      if (!this.isBlockValid(block)) {
+        this.connectionHandler.addBadNode(maxNode);
+        this.updateChain();
+        console.log('Block is invalid');
+        return;
+      }
+      this.addNewBlock(block);
+    });
+  }
+
+  /* const newBlocks = await this.connectionHandler.getNewBlocks(this.getHeight());
     if (newBlocks === null) {
       return;
     }
@@ -102,16 +131,15 @@ exports.BlockchainHandler = class BlockchainHandler {
         return;
       }
       this.addNewBlock(block);
-    });
-    // console.log('Chain:');
-    // console.log(this.blockchain);
-  }
+    }); */
+  // console.log('Chain:');
+  // console.log(this.blockchain);
 
   addNewBlock(block) {
     this.connectionHandler.removePendingTransactions(block.transactions);
     this.blockchain.push(block);
     console.log('New block:');
-    console.log(block);
+    console.log(JSON.stringify(block));
     console.log('Chain:');
     console.log(this.blockchain);
   }
@@ -126,6 +154,10 @@ exports.BlockchainHandler = class BlockchainHandler {
 
   getBlocks(startBlock, endBlock) {
     return this.blockchain.slice(startBlock, endBlock + 1);
+  }
+
+  getBlock(blockHeight) {
+    return this.blockchain[blockHeight];
   }
 
   getHeight() {

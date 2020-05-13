@@ -37,6 +37,10 @@ exports.Request = class Request {
     return Request.send(node, 'getHeight');
   }
 
+  static getBlock(node, blockHeight) {
+    return Request.send(node, 'getBlock', { blockHeight });
+  }
+
   static getBlocks(node, startBlock, endBlock) {
     return Request.send(node, 'getBlocks', { startBlock, endBlock });
   }

@@ -34,12 +34,17 @@ exports.Server = class Server {
   addRoutes() {
     this.addRoute('/getNodes', (json) => this.getNodes(json));
     this.addRoute('/getBlocks', (json) => this.getBlocks(json));
+    this.addRoute('/getBlock', (json) => this.getBlock(json));
     this.addRoute('/sendTransaction', (json) => this.connectionHandler.getNewTransaction(json));
     this.addRoute('/getPendingTransactions', () => this.getPendingTransactions());
   }
 
   getBlocks(json) {
     return this.blockchainHandler.getBlocks(json.startBlock, json.endBlock);
+  }
+
+  getBlock(json) {
+    return this.blockchainHandler.getBlock(json.blockHeight);
   }
 
   getNodes(json) {
