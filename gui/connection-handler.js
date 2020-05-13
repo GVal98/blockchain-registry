@@ -10,6 +10,7 @@ exports.ConnectionHandler = class ConnectionHandler {
     this.badNodes = [];
     this.transactionHelper = transactionHelper;
     this.pendingTransactions = [];
+    this.node = false;
     //[, , this.nodeIP] = process.argv;
     //[, , , this.nodePort] = process.argv;
     //this.node = { ip: this.nodeIP, port: parseInt(this.nodePort, 10) };
@@ -20,6 +21,7 @@ exports.ConnectionHandler = class ConnectionHandler {
   }
 
   async init() {
+    console.log(this.allNodes);
     Promise.resolve(await this.getAvailableNodesFull(this.allNodes));
     setInterval(() => this.getAvailableNodesFull(this.allNodes), 5000);
   }
@@ -107,21 +109,21 @@ exports.ConnectionHandler = class ConnectionHandler {
   getAvailableNodes(getNodesPromises, pendingNodes, targetNodes, availableNodes) {
     targetNodes.forEach(async (node) => {
       if (this.isNodeItself(node)) {
-        // console.log(`Skipped: ${JSON.stringify(node)} (Self)`);
+        console.log(`Skipped: ${JSON.stringify(node)} (Self)`);
         return;
       }
       if (ConnectionHandler.isInArray(node, pendingNodes)) {
-        // console.log(`Skipped: ${JSON.stringify(node)} (Already pending)`);
+        console.log(`Skipped: ${JSON.stringify(node)} (Already pending)`);
         return;
       }
       const getNodes = Request.getNodes(node, this.node);
       getNodesPromises.push(getNodes);
       pendingNodes.push(node);
-      // console.log(`Checking: ${JSON.stringify(node)}`);
+      console.log(`Checking: ${JSON.stringify(node)}`);
       const response = await getNodes;
       this.pushToAllNodes(node);
       if (response) {
-        // console.log(`Available: ${JSON.stringify(node)}`);
+        console.log(`Available: ${JSON.stringify(node)}`);
         const fullNode = ConnectionHandler.getFullNode(node, response.result.height);
         if (!ConnectionHandler.isInArray(fullNode, availableNodes)
          && !ConnectionHandler.isInArray(fullNode, this.badNodes)) {
@@ -137,7 +139,7 @@ exports.ConnectionHandler = class ConnectionHandler {
           ),
         );
       } else {
-        // console.log(`Not available: ${JSON.stringify(node)}`);
+        console.log(`Not available: ${JSON.stringify(node)}`);
       }
     });
   }
@@ -234,6 +236,9 @@ exports.ConnectionHandler = class ConnectionHandler {
   }
 
   isNodeItself(node) {
+    if (this.node === false) {
+      return false;
+    }
     return ConnectionHandler.isNodesEqual(node, this.node);
   }
 
@@ -242,7 +247,7 @@ exports.ConnectionHandler = class ConnectionHandler {
   }
 
   getNodes(node) {
-    // console.log(`Request by node: ${JSON.stringify(node)}`);
+    console.log(`Request by node: ${JSON.stringify(node)}`);
     this.pushToAllNodes(node);
     return this.allNodes;
   }

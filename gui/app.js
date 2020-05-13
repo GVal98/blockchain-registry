@@ -22,10 +22,10 @@ class App {
 
     this.connectionHandler.setBlockchainHandler(this.blockchainHandler);
     this.blockchainHandler.setConnectionHandler(this.connectionHandler);
-/*
+
     await this.connectionHandler.init();
     console.log('Connection handler started');
-
+/*
     this.blockchainHandler.init();
     console.log('Blockchain handler started');
 
