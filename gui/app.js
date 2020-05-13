@@ -9,16 +9,18 @@ const { ElectronApp } = require('./gui/electron-app');
 class App {
   async run() {
 
-    this.electronApp = new ElectronApp();
-    this.electronApp.run();
-    /*this.elliptic = new Elliptic();
+    const electronApp = new ElectronApp();
+    electronApp.run();
+    this.electronApp = electronApp.getApp();
+    this.appPath = this.electronApp.getAppPath();
+    this.elliptic = new Elliptic();
     this.transactionHelper = new TransactionHelper(this.elliptic);
     this.blockHelper = new BlockHelper(this.elliptic, this.transactionHelper);
 
-    this.connectionHandler = new ConnectionHandler(this.transactionHelper);
-    this.blockchainHandler = new BlockchainHandler(this.transactionHelper, this.blockHelper);
+    this.connectionHandler = new ConnectionHandler(this.transactionHelper, `${this.appPath}/nodes.json`);
+    this.blockchainHandler = new BlockchainHandler(this.transactionHelper, this.blockHelper, `${this.appPath}/blockchain.json`);
 
-    this.connectionHandler.setBlockchainHandler(this.blockchainHandler);
+    /*this.connectionHandler.setBlockchainHandler(this.blockchainHandler);
     this.blockchainHandler.setConnectionHandler(this.connectionHandler);
 
     await this.connectionHandler.init();

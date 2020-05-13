@@ -3,9 +3,10 @@ const { BlockHelper } = require('./block-helper');
 const { ConnectionHandler } = require('./connection-handler');
 
 exports.BlockchainHandler = class BlockchainHandler {
-  constructor(transactionHelper, blockHelper) {
+  constructor(transactionHelper, blockHelper, blockchainFile) {
     this.transactionHelper = transactionHelper;
     this.blockHelper = blockHelper;
+    this.blockchainFile = blockchainFile;
     this.loadBlockchainFromFile();
     this.setValidators();
     this.setSenders();
@@ -146,12 +147,8 @@ exports.BlockchainHandler = class BlockchainHandler {
     console.log(this.blockchain);
   }
 
-  static getBlockchainFile() {
-    return process.argv[5];
-  }
-
   loadBlockchainFromFile() {
-    this.blockchain = JSON.parse(fs.readFileSync(BlockchainHandler.getBlockchainFile()));
+    this.blockchain = JSON.parse(fs.readFileSync(this.blockchainFile));
   }
 
   getBlocks(startBlock, endBlock) {

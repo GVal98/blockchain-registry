@@ -3,16 +3,16 @@ const { Request } = require('./request');
 const { TransactionHelper } = require('./transaction-helper');
 
 exports.ConnectionHandler = class ConnectionHandler {
-  constructor(transactionHelper) {
-    this.setNodesFile();
+  constructor(transactionHelper, nodesFile) {
+    this.nodesFile = nodesFile;
     this.loadNodesFromFile();
     this.availableNodes = [];
     this.badNodes = [];
     this.transactionHelper = transactionHelper;
     this.pendingTransactions = [];
-    [, , this.nodeIP] = process.argv;
-    [, , , this.nodePort] = process.argv;
-    this.node = { ip: this.nodeIP, port: parseInt(this.nodePort, 10) };
+    //[, , this.nodeIP] = process.argv;
+    //[, , , this.nodePort] = process.argv;
+    //this.node = { ip: this.nodeIP, port: parseInt(this.nodePort, 10) };
   }
 
   setBlockchainHandler(blockchainHandler) {
@@ -235,11 +235,6 @@ exports.ConnectionHandler = class ConnectionHandler {
 
   isNodeItself(node) {
     return ConnectionHandler.isNodesEqual(node, this.node);
-  }
-
-
-  setNodesFile() {
-    [, , , , this.nodesFile] = process.argv;
   }
 
   loadNodesFromFile() {

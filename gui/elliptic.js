@@ -4,13 +4,10 @@ const crypto = require('crypto');
 
 exports.Elliptic = class Elliptic {
   constructor() {
-    this.setValidatorPrivateKey();
-    this.setSenderPrivateKey();
     this.eddsa = new EdDSA('ed25519');
-    this.senderKey = this.eddsa.keyFromSecret(this.senderPrivateKey);
-    this.senderPublicKey = this.senderKey.getPublic('hex');
-    this.validatorKey = this.eddsa.keyFromSecret(this.validatorPrivateKey);
-    this.validatorPublicKey = this.validatorKey.getPublic('hex');
+    //this.setSenderPrivateKey();
+    //this.senderKey = this.eddsa.keyFromSecret(this.senderPrivateKey);
+    //this.senderPublicKey = this.senderKey.getPublic('hex');
   }
 
   signTransaction(transaction) {
@@ -54,23 +51,11 @@ exports.Elliptic = class Elliptic {
     return senderKey.verify(transactionHash, transaction.sign);
   }
 
-  static getValidatorPrivateKeyFile() {
-    return process.argv[6];
-  }
-
   static getSenderPrivateKeyFile() {
     return process.argv[7];
   }
 
-  setValidatorPrivateKey() {
-    this.validatorPrivateKey = fs.readFileSync(Elliptic.getValidatorPrivateKeyFile(), 'utf-8');
-  }
-
   setSenderPrivateKey() {
     this.senderPrivateKey = fs.readFileSync(Elliptic.getSenderPrivateKeyFile(), 'utf-8');
-  }
-
-  getValidatorPublicKey() {
-    return this.validatorPublicKey;
   }
 };

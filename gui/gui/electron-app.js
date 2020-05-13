@@ -12,6 +12,9 @@ exports.ElectronApp = class ElectronApp {
     window.webContents.openDevTools();
   }
   
+  getApp() {
+    return app;
+  }
   run() {
     app.allowRendererProcessReuse = true;
     app.whenReady().then(this.createWindow);
