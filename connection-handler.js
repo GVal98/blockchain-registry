@@ -46,6 +46,18 @@ exports.ConnectionHandler = class ConnectionHandler {
     return null;
   }
 
+  static async getNewBlock(highestNode, blockHeight) {
+    console.log(`Updating from: ${JSON.stringify(highestNode)}`);
+    const newBlock = await Request.getBlock(highestNode, blockHeight);
+    // console.log('New blocks:');
+    // console.log(newBlocks);
+    if (newBlock !== null) {
+      return newBlock.result;
+    }
+    return null;
+  }
+
+
   static async downloadNewBlocks(node, currentHeight) {
     const newBlocks = await Request.getBlocks(node, currentHeight + 1, node.height);
     return newBlocks;
