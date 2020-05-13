@@ -18,6 +18,11 @@ class BlockchainCreator {
     validatorPublicKeys.forEach((publicKey) => {
       transaction.data.validators.push(publicKey);
     });
+    transaction.data.senders = [];
+    const senderPublicKeys = JSON.parse(fs.readFileSync(BlockchainCreator.getSenderPublicKeysFile(), 'utf-8'));
+    senderPublicKeys.forEach((publicKey) => {
+      transaction.data.senders.push(publicKey);
+    });
     return transaction;
   }
 
@@ -33,8 +38,12 @@ class BlockchainCreator {
     return process.argv[2];
   }
 
-  static getBlockchainFile() {
+  static getSenderPublicKeysFile() {
     return process.argv[3];
+  }
+
+  static getBlockchainFile() {
+    return process.argv[4];
   }
 }
 
