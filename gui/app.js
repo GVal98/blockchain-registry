@@ -4,10 +4,14 @@ const { BlockHelper } = require('./block-helper');
 const { ConnectionHandler } = require('./connection-handler');
 const { BlockchainHandler } = require('./blockchain-handler');
 const { Server } = require('./server');
+const { ElectronApp } = require('./gui/electron-app');
 
 class App {
   async run() {
-    this.elliptic = new Elliptic();
+
+    this.electronApp = new ElectronApp();
+    this.electronApp.run();
+    /*this.elliptic = new Elliptic();
     this.transactionHelper = new TransactionHelper(this.elliptic);
     this.blockHelper = new BlockHelper(this.elliptic, this.transactionHelper);
 
@@ -25,7 +29,7 @@ class App {
 
     this.Server = new Server(this.blockchainHandler, this.connectionHandler);
     await this.Server.start();
-    console.log('Server started');
+    console.log('Server started');*/
   }
 }
 
