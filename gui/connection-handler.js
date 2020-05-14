@@ -172,6 +172,7 @@ exports.ConnectionHandler = class ConnectionHandler {
       this.blockchainHandler.getAllTransactions(),
       transaction,
     )) {
+      this.electronApp.updatePendingTransactions(this.pendingTransactions);
       ConnectionHandler.pushTransactionIfNotIn(transaction, this.pendingTransactions);
       return true;
     }
@@ -204,6 +205,7 @@ exports.ConnectionHandler = class ConnectionHandler {
     this.pendingTransactions = this.pendingTransactions.filter(
       (transaction) => !TransactionHelper.isTransactionsInArray(transaction, transactions),
     );
+    this.electronApp.updatePendingTransactions(this.pendingTransactions);
   }
 
   getPendingTransactions() {

@@ -16,8 +16,8 @@ exports.BlockchainHandler = class BlockchainHandler {
   }
 
   init() {
-    // const tx = this.transactionHelper.createTransaction('nodata');
-    // this.sendTransaction(tx);
+    const tx = this.transactionHelper.createTransaction('nodata');
+    this.sendTransaction(tx);
     setInterval(() => this.updateChain(), 2000);
     setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
     // setInterval(() => console.log(this.getPendingTransactions()), 1000);

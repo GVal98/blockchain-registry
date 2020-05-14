@@ -15,3 +15,8 @@ ipcRenderer.on('newBlock', (event, chain) => updateChain(chain));
 function updateChain(chain) {
   document.getElementById("chain").innerHTML = JSON.stringify(chain);
 }
+
+ipcRenderer.on('newPendingTransactions', (event, pendingTransactions) => updatePendingTransactions(pendingTransactions));
+function updatePendingTransactions(pendingTransactions) {
+  document.getElementById("pendingTransactions").innerHTML = JSON.stringify(pendingTransactions);
+}

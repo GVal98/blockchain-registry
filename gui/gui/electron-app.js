@@ -24,6 +24,10 @@ exports.ElectronApp = class ElectronApp {
     this.window.webContents.send('newBlock', chain);
   }
 
+  updatePendingTransactions(pendingTransactions) {
+    this.window.webContents.send('newPendingTransactions', pendingTransactions);
+  }
+
   async run() {
     app.allowRendererProcessReuse = true;
     await app.whenReady();
