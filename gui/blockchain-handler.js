@@ -1,15 +1,21 @@
 const fs = require('fs');
 const { BlockHelper } = require('./block-helper');
 const { ConnectionHandler } = require('./connection-handler');
+const { ipcMain } = require('electron');
 
 exports.BlockchainHandler = class BlockchainHandler {
-  constructor(transactionHelper, blockHelper, blockchainFile) {
+  constructor(transactionHelper, blockHelper, blockchainFile, electronApp) {
     this.transactionHelper = transactionHelper;
     this.blockHelper = blockHelper;
     this.blockchainFile = blockchainFile;
+    this.electronApp = electronApp;
     this.loadBlockchainFromFile();
+    this.electronApp.updateChain(this.blockchain);
     this.setValidators();
     this.setSenders();
+    ipcMain.on('windowReady', (event) => {
+      event.reply('newBlock', this.blockchain);
+    })
   }
 
   setConnectionHandler(connectionHandler) {
@@ -20,7 +26,7 @@ exports.BlockchainHandler = class BlockchainHandler {
     // const tx = this.transactionHelper.createTransaction('nodata');
     // this.sendTransaction(tx);
     setInterval(() => this.updateChain(), 2000);
-    setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
+    // setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
     // setInterval(() => console.log(this.getPendingTransactions()), 1000);
   }
 
@@ -141,6 +147,7 @@ exports.BlockchainHandler = class BlockchainHandler {
   addNewBlock(block, height) {
     this.connectionHandler.removePendingTransactions(block.transactions);
     this.blockchain[height] = block;
+    this.electronApp.updateChain(this.blockchain);
     console.log('New block:');
     console.log(JSON.stringify(block));
     console.log('Chain:');

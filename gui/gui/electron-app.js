@@ -19,10 +19,15 @@ exports.ElectronApp = class ElectronApp {
   updateAvailableNodes(availableNodes) {
     this.window.webContents.send('newAvailableNodes', availableNodes);
   }
+  
+  updateChain(chain) {
+    this.window.webContents.send('newBlock', chain);
+  }
 
-  run() {
+  async run() {
     app.allowRendererProcessReuse = true;
-    app.whenReady().then(this.createWindow.bind(this));
+    await app.whenReady();
+    this.createWindow();
     app.on('window-all-closed', () => {
       if (process.platform !== 'darwin') {
         app.quit()
@@ -33,6 +38,7 @@ exports.ElectronApp = class ElectronApp {
      if (BrowserWindow.getAllWindows().length === 0) {
        createWindow()
      }
-   })
+    })
+    return Promise.resolve();
   }
 }

@@ -10,7 +10,8 @@ class App {
   async run() {
 
     const electronApp = new ElectronApp();
-    electronApp.run();
+    await electronApp.run();
+    console.log('Electron app started');
     this.electronApp = electronApp.getApp();
     this.appPath = this.electronApp.getAppPath();
     this.elliptic = new Elliptic();
@@ -18,17 +19,17 @@ class App {
     this.blockHelper = new BlockHelper(this.elliptic, this.transactionHelper);
 
     this.connectionHandler = new ConnectionHandler(this.transactionHelper, `${this.appPath}/nodes.json`, electronApp);
-    this.blockchainHandler = new BlockchainHandler(this.transactionHelper, this.blockHelper, `${this.appPath}/blockchain.json`);
+    this.blockchainHandler = new BlockchainHandler(this.transactionHelper, this.blockHelper, `${this.appPath}/blockchain.json`, electronApp);
 
     this.connectionHandler.setBlockchainHandler(this.blockchainHandler);
     this.blockchainHandler.setConnectionHandler(this.connectionHandler);
 
     await this.connectionHandler.init();
     console.log('Connection handler started');
-/*
+
     this.blockchainHandler.init();
     console.log('Blockchain handler started');
-
+/*
     this.Server = new Server(this.blockchainHandler, this.connectionHandler);
     await this.Server.start();
     console.log('Server started');*/
