@@ -10,7 +10,7 @@ exports.BlockchainHandler = class BlockchainHandler {
     this.blockchainFile = blockchainFile;
     this.electronApp = electronApp;
     this.loadBlockchainFromFile();
-    this.electronApp.updateChain(this.blockchain);
+    this.electronApp.updateChain(this.getLastBlocks(5));
     this.setValidators();
     this.setSenders();
     ipcMain.on('windowReady', (event) => {
@@ -147,11 +147,15 @@ exports.BlockchainHandler = class BlockchainHandler {
   addNewBlock(block, height) {
     this.connectionHandler.removePendingTransactions(block.transactions);
     this.blockchain[height] = block;
-    this.electronApp.updateChain(this.blockchain);
+    this.electronApp.updateChain(this.getLastBlocks(5));
     console.log('New block:');
     console.log(JSON.stringify(block));
     console.log('Chain:');
     console.log(this.blockchain);
+  }
+
+  getLastBlocks(count) {
+    return this.blockchain.slice(this.blockchain.length - count, this.blockchain.length).reverse();
   }
 
   loadBlockchainFromFile() {

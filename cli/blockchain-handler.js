@@ -143,7 +143,7 @@ exports.BlockchainHandler = class BlockchainHandler {
     console.log('New block:');
     console.log(JSON.stringify(block));
     console.log('Chain:');
-    console.log(this.blockchain);
+    console.log(JSON.stringify(this.blockchain));
   }
 
   static getBlockchainFile() {
