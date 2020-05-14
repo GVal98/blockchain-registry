@@ -2,14 +2,23 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>Blockchain Registry</title>
     <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <link rel="stylesheet" href="./style.css"></script>
+    <link rel="stylesheet" href="./bootstrap/bootstrap.min.css"></script>
   </head>
   <body>
-    <div id="pendingTransactions"></div>
-    <div id="chain"></div>
-    <div id="availableNodes"></div>
+    <div class="container">
+      <div class="row">
+        <div id="pendingTransactions" class="col border">
+        </div>
+        <div id="chain" class="col border">
+        </div>
+        <div id="availableNodes" class="col border">
+        </div>
+      </div>
+    </div>
   </body>
   <script src="./renderer.js"></script>
 </html>
