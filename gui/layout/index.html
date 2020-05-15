@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Blockchain Registry</title>
+    <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <link rel="stylesheet" href="./style.css"></script>
+    <link rel="stylesheet" href="./bootstrap/bootstrap.min.css"></script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div id="pendingTransactions" class="col">
+          <h5 class="text-center">Новые транзакции</h5>
+          <div class="card">
+            <div class="card-header text-center font-weight-bold">
+              23:59:59 31.12.19
+            </div>
+            <div class="card-body">
+              <p class="card-text">
+                <span class="font-weight-bold">Кадастровый номер: </span><span>47:14:1203001:814</span><br>
+                <span class="font-weight-bold">ИНН продавца: </span><span>7707083893</span><br>
+                <span class="font-weight-bold">ИНН покупателя: </span><span>7710140679</span><br>
+                <span class="font-weight-bold">Сумма: </span><span>5000000</span> ₽
+              </p>
+            </div>
+            <div class="card-footer small">
+              04f72b5297257e0dfae73932008f77bca0f1e523b54934af06c7498795d4de03
+            </div>
+          </div>
+        </div>
+        <div id="chain" class="col">
+          <h5 class="text-center">Последние транзакции</h5>
+        </div>
+        <div id="availableNodes" class="col">
+          <h5 class="text-center">Доступные узлы</h5>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
