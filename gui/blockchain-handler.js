@@ -10,11 +10,10 @@ exports.BlockchainHandler = class BlockchainHandler {
     this.blockchainFile = blockchainFile;
     this.electronApp = electronApp;
     this.loadBlockchainFromFile();
-    this.electronApp.updateChain(this.getLastBlocks(5));
     this.setValidators();
     this.setSenders();
     ipcMain.on('windowReady', (event) => {
-      event.reply('newBlock', this.blockchain);
+      event.reply('newBlock', this.getLastBlocks(5));
     })
   }
 

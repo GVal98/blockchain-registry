@@ -15,11 +15,22 @@ exports.BlockchainHandler = class BlockchainHandler {
     this.connectionHandler = connectionHandler;
   }
 
+  getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
   init() {
-    const tx = this.transactionHelper.createTransaction('nodata');
+    const tx = this.transactionHelper.createTransaction({
+      property: `${this.getRandomInt(40, 47)}:${this.getRandomInt(10, 14)}:${this.getRandomInt(100000, 120000)}:${this.getRandomInt(800, 814)}`,
+      seller: this.getRandomInt(7707083893, 7710140679),
+      buyer: this.getRandomInt(7707083893, 7710140679),
+      price: this.getRandomInt(1000000, 10000000)
+    });
     this.sendTransaction(tx);
     setInterval(() => this.updateChain(), 2000);
-    setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
+    //setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
     // setInterval(() => console.log(this.getPendingTransactions()), 1000);
   }
 
