@@ -30,7 +30,7 @@ exports.BlockchainHandler = class BlockchainHandler {
     });
     this.sendTransaction(tx);
     setInterval(() => this.updateChain(), 2000);
-    //setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
+    setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
     // setInterval(() => console.log(this.getPendingTransactions()), 1000);
   }
 

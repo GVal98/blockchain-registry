@@ -15,6 +15,19 @@ exports.BlockchainHandler = class BlockchainHandler {
     ipcMain.on('windowReady', (event) => {
       event.reply('newBlock', this.getLastBlocks(5));
     })
+    ipcMain.on('RequsetBlocks', (event, offset) => {
+      event.reply('blocksResponse', this.getLastBlocksOffset(offset, 5));
+    })
+  }
+
+  getLastBlocksOffset(offset, count) {
+    let start = offset+1 - count;
+    let end = offset+1;
+    if (start < 0) {
+      start = 0;
+    }
+    console.log(start, end);
+    return { chain: this.blockchain.slice(start, end).reverse(), height: this.getHeight() };
   }
 
   setConnectionHandler(connectionHandler) {
@@ -154,7 +167,7 @@ exports.BlockchainHandler = class BlockchainHandler {
   }
 
   getLastBlocks(count) {
-    return this.blockchain.slice(this.blockchain.length - count, this.blockchain.length).reverse();
+    return { chain: this.blockchain.slice(this.blockchain.length - count, this.blockchain.length+1).reverse(), height: this.getHeight() };
   }
 
   loadBlockchainFromFile() {
