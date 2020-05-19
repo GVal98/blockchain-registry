@@ -110,17 +110,17 @@ exports.ConnectionHandler = class ConnectionHandler {
   getAvailableNodes(getNodesPromises, pendingNodes, targetNodes, availableNodes) {
     targetNodes.forEach(async (node) => {
       if (this.isNodeItself(node)) {
-        console.log(`Skipped: ${JSON.stringify(node)} (Self)`);
+        //console.log(`Skipped: ${JSON.stringify(node)} (Self)`);
         return;
       }
       if (ConnectionHandler.isInArray(node, pendingNodes)) {
-        console.log(`Skipped: ${JSON.stringify(node)} (Already pending)`);
+       // console.log(`Skipped: ${JSON.stringify(node)} (Already pending)`);
         return;
       }
       const getNodes = Request.getNodes(node, this.node);
       getNodesPromises.push(getNodes);
       pendingNodes.push(node);
-      console.log(`Checking: ${JSON.stringify(node)}`);
+      //console.log(`Checking: ${JSON.stringify(node)}`);
       const response = await getNodes;
       this.pushToAllNodes(node);
       if (response) {
@@ -140,7 +140,7 @@ exports.ConnectionHandler = class ConnectionHandler {
           ),
         );
       } else {
-        console.log(`Not available: ${JSON.stringify(node)}`);
+       // console.log(`Not available: ${JSON.stringify(node)}`);
       }
     });
   }

@@ -5,6 +5,7 @@ exports.ElectronApp = class ElectronApp {
       show: false,
       width: screen.getPrimaryDisplay().workAreaSize.width,
       height: screen.getPrimaryDisplay().workAreaSize.height,
+      title: 'Blockchain Registry',
       webPreferences: {
         nodeIntegration: true
       }

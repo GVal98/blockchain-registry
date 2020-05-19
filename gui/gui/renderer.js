@@ -1,13 +1,46 @@
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, dialog } = require('electron');
+window.jQuery = window.$ = require('jquery');
 
 document.addEventListener('DOMContentLoaded', () => init());
 let lastBlock = 0;
 let currentBlock = false;
+let senderKeyFile = false;
 
 function init() {
   ipcRenderer.send('windowReady');
   document.getElementById('left').addEventListener('click', () => previousPage());
   document.getElementById('right').addEventListener('click', () => nextPage());
+  $('#sendTransaction').on('click', () => sendTransaction());
+  $('#keyFile').on('change', (result) => {
+    senderKeyFile = result.target.files[0].path;
+    $('#keyFileLabel').html(result.target.files[0].name);
+  });
+}
+
+ipcRenderer.on('transactionCreated', (event, result) => {
+  if (result) {
+    $('#AddModal').hide();
+    $('.modal-backdrop').fadeOut();
+    $('.toast-header').removeClass('bg-danger').addClass('bg-success');
+    showNotification('Транзакция успешно отправлена');
+  } else {
+    $('.toast-header').removeClass('bg-success').addClass('bg-danger');
+    showNotification('Невалидная транзакция');
+  }
+});
+
+function showNotification(text) {
+  $('#notification').html(text);
+  $('.toast').toast('show');
+}
+
+function sendTransaction() {
+  let keyPassword = $('#keyPassword').val();
+  let property = $('#property').val();
+  let seller = $('#seller').val();
+  let buyer = $('#buyer').val();
+  let price = $('#price').val();
+  ipcRenderer.send('sendTransaction', senderKeyFile, keyPassword, property, seller, buyer, price);
 }
 
 function previousPage() {

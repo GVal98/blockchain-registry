@@ -18,6 +18,9 @@ exports.BlockchainHandler = class BlockchainHandler {
     ipcMain.on('RequsetBlocks', (event, offset) => {
       event.reply('blocksResponse', this.getLastBlocksOffset(offset, 5));
     })
+    ipcMain.on('sendTransaction', (event, senderKeyFile, senderKeyPassword, property, seller, buyer, price) => {
+      event.reply('transactionCreated', this.createAndSendTransaction(senderKeyFile, senderKeyPassword, property, seller, buyer, price));
+    })
   }
 
   getLastBlocksOffset(offset, count) {
@@ -40,6 +43,16 @@ exports.BlockchainHandler = class BlockchainHandler {
     setInterval(() => this.updateChain(), 2000);
     // setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
     // setInterval(() => console.log(this.getPendingTransactions()), 1000);
+  }
+
+  createAndSendTransaction(senderKeyFile, senderKeyPassword, property, seller, buyer, price) {
+    let data = {property, seller, buyer, price};
+    let transaction = this.transactionHelper.createTransaction(senderKeyFile, senderKeyPassword, data);
+    let isValid = this.transactionHelper.isTransactionValid(this.senders, this.getAllTransactions(), transaction);
+    if (isValid) {
+      this.sendTransaction(transaction);
+    }
+    return isValid;
   }
 
   isBlockValid(block) {

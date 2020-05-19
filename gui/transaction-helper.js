@@ -3,7 +3,8 @@ exports.TransactionHelper = class TransactionHelper {
     this.elliptic = elliptic;
   }
 
-  createTransaction(data) {
+  createTransaction(privateKeyFile, privateKeyPassword, data) {
+    this.elliptic.setSenderKey(privateKeyFile, privateKeyPassword);
     let transaction = {};
     transaction.time = Date.now();
     transaction.type = 'data';
