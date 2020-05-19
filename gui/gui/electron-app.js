@@ -1,15 +1,18 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, screen} = require('electron');
 exports.ElectronApp = class ElectronApp {
   createWindow () {
     this.window = new BrowserWindow({
-      width: 1200,
-      height: 600,
+      show: false,
+      width: screen.getPrimaryDisplay().workAreaSize.width,
+      height: screen.getPrimaryDisplay().workAreaSize.height,
       webPreferences: {
         nodeIntegration: true
       }
     });
+    this.window.maximize();
     this.window.loadFile('./gui/index.html');
     this.window.webContents.openDevTools();
+    this.window.show();
   }
   
   getApp() {
