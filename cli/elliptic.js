@@ -1,6 +1,7 @@
 const EdDSA = require('elliptic').eddsa;
 const fs = require('fs');
 const crypto = require('crypto');
+const CryptoJS = require('crypto-js');
 
 exports.Elliptic = class Elliptic {
   constructor() {
@@ -62,12 +63,20 @@ exports.Elliptic = class Elliptic {
     return process.argv[7];
   }
 
+  static getValidatorPrivateKeyPassword() {
+    return process.argv[8];
+  }
+
+  static getSenderPrivateKeyPassword() {
+    return process.argv[9];
+  }
+
   setValidatorPrivateKey() {
-    this.validatorPrivateKey = fs.readFileSync(Elliptic.getValidatorPrivateKeyFile(), 'utf-8');
+    this.validatorPrivateKey = CryptoJS.AES.decrypt(fs.readFileSync(Elliptic.getValidatorPrivateKeyFile(), 'utf-8'), Elliptic.getValidatorPrivateKeyPassword()).toString(CryptoJS.enc.Utf8);
   }
 
   setSenderPrivateKey() {
-    this.senderPrivateKey = fs.readFileSync(Elliptic.getSenderPrivateKeyFile(), 'utf-8');
+    this.senderPrivateKey = CryptoJS.AES.decrypt(fs.readFileSync(Elliptic.getSenderPrivateKeyFile(), 'utf-8'), Elliptic.getSenderPrivateKeyPassword()).toString(CryptoJS.enc.Utf8);
   }
 
   getValidatorPublicKey() {
