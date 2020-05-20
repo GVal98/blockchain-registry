@@ -153,8 +153,15 @@ exports.BlockchainHandler = class BlockchainHandler {
     this.blockchain[height] = block;
     console.log('New block:');
     console.log(JSON.stringify(block));
-    console.log('Chain:');
-    console.log(JSON.stringify(this.blockchain));
+    //console.log('Chain:');
+    //console.log(JSON.stringify(this.blockchain));
+    this.saveChain();
+  }
+
+  saveChain() {
+    console.log('Saving chain');
+    fs.writeFileSync(BlockchainHandler.getBlockchainFile(), JSON.stringify(this.blockchain));
+    console.log('Chain saved');
   }
 
   static getBlockchainFile() {

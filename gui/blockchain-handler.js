@@ -197,8 +197,9 @@ exports.BlockchainHandler = class BlockchainHandler {
     this.electronApp.updateChain(this.getLastBlocks(5));
     console.log('New block:');
     console.log(JSON.stringify(block));
-    console.log('Chain:');
-    console.log(this.blockchain);
+    //console.log('Chain:');
+    //console.log(this.blockchain);
+    this.saveChain();
   }
 
   getLastBlocks(count) {
@@ -207,6 +208,12 @@ exports.BlockchainHandler = class BlockchainHandler {
 
   loadBlockchainFromFile() {
     this.blockchain = JSON.parse(fs.readFileSync(this.blockchainFile));
+  }
+
+  saveChain() {
+    console.log('Saving chain');
+    fs.writeFileSync(this.blockchainFile, JSON.stringify(this.blockchain));
+    console.log('Chain saved');
   }
 
   getBlocks(startBlock, endBlock) {
