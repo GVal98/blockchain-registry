@@ -11,8 +11,9 @@ exports.ElectronApp = class ElectronApp {
       }
     });
     this.window.maximize();
+    this.window.setMenuBarVisibility(false);
     this.window.loadFile('./gui/index.html');
-    this.window.webContents.openDevTools();
+    //this.window.webContents.openDevTools();
     this.window.show();
   }
   
