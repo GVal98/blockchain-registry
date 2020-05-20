@@ -5,16 +5,19 @@ document.addEventListener('DOMContentLoaded', () => init());
 let lastBlock = 0;
 let currentBlock = false;
 let senderKeyFile = false;
+let isSearch = false;
 
 function init() {
   ipcRenderer.send('windowReady');
   document.getElementById('left').addEventListener('click', () => previousPage());
   document.getElementById('right').addEventListener('click', () => nextPage());
+  $('#search').on('click', () => search());
   $('#sendTransaction').on('click', () => sendTransaction());
   $('#keyFile').on('change', (result) => {
     senderKeyFile = result.target.files[0].path;
     $('#keyFileLabel').html(result.target.files[0].name);
   });
+  $('#cancelSearch').on('click', () => cancelSearch());
 }
 
 ipcRenderer.on('transactionCreated', (event, result) => {
@@ -32,6 +35,59 @@ ipcRenderer.on('transactionCreated', (event, result) => {
 function showNotification(text) {
   $('#notification').html(text);
   $('.toast').toast('show');
+}
+
+function stringToTimestampAdd(string) {
+  if (string == '') return '';
+  string = string.split('.');
+  return new Date(string[1]+"/"+string[0]+"/"+string[2]).addDays(1).getTime();
+}
+
+function stringToTimestamp(string) {
+  if (string == '') return '';
+  string = string.split('.');
+  return new Date(string[1]+"/"+string[0]+"/"+string[2]).getTime();
+}
+
+Date.prototype.addDays = function(days) {
+  var date = new Date(this.valueOf());
+  date.setDate(date.getDate() + days);
+  return date;
+}
+
+
+function search() {
+  let property = $('#searchPropery').val();
+  let anyParty = $('#searchAnyParty').val();
+  let seller = $('#searchSeller').val();
+  let buyer = $('#searchBuyer').val();
+  let minPrice = $('#searchMinPrice').val();
+  let maxPrice = $('#searchMaxPrice').val();
+  let startDate = stringToTimestamp($('#searchStartDate').val());
+  let endDate = stringToTimestampAdd($('#searchEndDate').val());
+  ipcRenderer.send('search', property, anyParty, seller, buyer, minPrice, maxPrice, startDate, endDate);
+}
+
+ipcRenderer.on('searchDone', (event, result) => inseartSearch(result));
+
+function inseartSearch(result) {
+  document.getElementById('chainName').textContent="Результаты";
+  currentBlock = false;
+  isSearch = true;
+  document.getElementById('left').disabled = true;
+  document.getElementById('right').disabled = true;
+  document.getElementById('chain').innerHTML = '';
+  $('#cancelSearch').removeClass('d-none').addClass('d-inline');
+  result.forEach(transaction => {
+      insertTransactionCard('chain', transaction, transaction.time);
+  });
+}
+
+function cancelSearch() {
+  document.getElementById('chainName').textContent="Последние транзакции";
+  $('#cancelSearch').removeClass('d-inline').addClass('d-none');
+  isSearch = false;
+  ipcRenderer.send('windowReady');
 }
 
 function sendTransaction() {
@@ -108,6 +164,7 @@ function changePage(result) {
 ipcRenderer.on('newBlock', (event, result) => updateChain(result));
 function updateChain(result) {
   lastBlock = result.height;
+  if (isSearch) return;
   if (currentBlock === false || lastBlock - currentBlock <= 5) {
     currentBlock = lastBlock;
     updateButtons();

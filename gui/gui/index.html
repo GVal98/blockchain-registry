@@ -15,31 +15,31 @@
     <div class="container-fluid">
       <div class="row py-2">
         <div class="col">
-          <input type="text" class="form-control" placeholder="Кадастровый номер">
+          <input id="searchPropery" type="text" class="form-control" placeholder="Кадастровый номер">
         </div>
         <div class="col">
-          <input type="text" class="form-control" placeholder="ИНН">
+          <input id="searchAnyParty" type="text" class="form-control" placeholder="ИНН">
         </div>
         <div class="col">
-          <input type="text" class="form-control" placeholder="ИНН продавца">
+          <input id="searchSeller" type="text" class="form-control" placeholder="ИНН продавца">
         </div>
         <div class="col">
-          <input type="text" class="form-control" placeholder="ИНН покупателя">
+          <input id="searchBuyer" type="text" class="form-control" placeholder="ИНН покупателя">
         </div>
         <div class="col">
-          <input type="text" class="form-control" placeholder="Минимальная сумма">
+          <input id="searchMinPrice" type="text" class="form-control" placeholder="Минимальная сумма">
         </div>
         <div class="col">
-          <input type="text" class="form-control" placeholder="Максимальная сумма">
+          <input id="searchMaxPrice" type="text" class="form-control" placeholder="Максимальная сумма">
         </div>
         <div class="col">
-          <input type="text" class="form-control" placeholder="Начальная дата">
+          <input id="searchStartDate" type="text" class="form-control" placeholder="Начальная дата">
         </div>
         <div class="col">
-          <input type="text" class="form-control" placeholder="Конечная дата">
+          <input id="searchEndDate" type="text" class="form-control" placeholder="Конечная дата">
         </div>
         <div class="col-1">
-          <button type="button" class="btn btn-success">
+          <button id="search" type="button" class="btn btn-success">
             <span class="oi oi-magnifying-glass"></span>
           </button>
           <button type="button" class="btn btn-primary">
@@ -67,6 +67,9 @@
               <span class="oi oi-chevron-left"></span>
             </button>   
             <span id="chainName">Последние транзакции</span>
+            <button id="cancelSearch" type="button" class="btn btn-danger btn-sm d-none">
+              <span class="oi oi-circle-x"></span>
+            </button>
             <button id="right" type="button" class="btn btn-primary btn-sm">
               <span class="oi oi-chevron-right"></span>
             </button>

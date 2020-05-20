@@ -21,6 +21,9 @@ exports.BlockchainHandler = class BlockchainHandler {
     ipcMain.on('sendTransaction', (event, senderKeyFile, senderKeyPassword, property, seller, buyer, price) => {
       event.reply('transactionCreated', this.createAndSendTransaction(senderKeyFile, senderKeyPassword, property, seller, buyer, price));
     })
+    ipcMain.on('search', (event, property, anyParty, seller, buyer, minPrice, maxPrice, startDate, endDate) => {
+      event.reply('searchDone', this.search(property, anyParty, seller, buyer, minPrice, maxPrice, startDate, endDate));
+    })
   }
 
   getLastBlocksOffset(offset, count) {
@@ -53,6 +56,25 @@ exports.BlockchainHandler = class BlockchainHandler {
       this.sendTransaction(transaction);
     }
     return isValid;
+  }
+
+  search(property, anyParty, seller, buyer, minPrice, maxPrice, startDate, endDate) {
+    let transactions = [];
+    for (let i = 1; i < this.blockchain.length; i += 1) {
+      this.blockchain[i].transactions.forEach(transaction => {
+        if (!(transaction.data.price <= maxPrice || maxPrice == '')) return;
+        if (!(transaction.data.price >= minPrice || minPrice == '')) return;
+        if (!(transaction.data.property == property || property == '')) return;
+        if (!(this.blockchain[i].time <= endDate || endDate == '')) return;
+        if (!(this.blockchain[i].time >= startDate || startDate == '')) return;
+        if (!(transaction.data.seller == seller || seller == '')) return;
+        if (!(transaction.data.buyer == buyer || buyer == '')) return;
+        if (!(transaction.data.buyer == anyParty || transaction.data.seller == anyParty || anyParty == '')) return;
+        transaction.time = this.blockchain[i].time;
+        transactions.push(transaction);
+      });
+    }
+    return transactions.reverse();
   }
 
   isBlockValid(block) {
