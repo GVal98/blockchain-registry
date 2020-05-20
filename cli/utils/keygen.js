@@ -9,7 +9,7 @@ class KeyGen {
     read({prompt: 'Enter new password:', silent: true, replace: '*'}, (error, password) => {
       read({prompt: 'Repeat password:', silent: true, replace: '*'}, (error, password2) => {
         if (password === password2) {
-          const privateKeyFile = process.argv[2];
+          const privateKeyFile = `${process.argv[2]}.key`;
           const eddsa = new EdDSA('ed25519');
           const key = eddsa.keyFromSecret(crypto.randomBytes(16));
           const publicKey = key.getPublic('hex');
