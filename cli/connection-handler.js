@@ -213,6 +213,7 @@ exports.ConnectionHandler = class ConnectionHandler {
 
   pushToAllNodes(node) {
     ConnectionHandler.pushIfNotIn(node, this.allNodes);
+    fs.writeFileSync(this.nodesFile, JSON.stringify(this.allNodes));
   }
 
   static isInArray(targetNode, array) {
