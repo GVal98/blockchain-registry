@@ -22,16 +22,13 @@ exports.BlockchainHandler = class BlockchainHandler {
   }
 
   init() {
-    const tx = this.transactionHelper.createTransaction({
-      property: `${this.getRandomInt(40, 47)}:${this.getRandomInt(10, 14)}:${this.getRandomInt(100000, 120000)}:${this.getRandomInt(800, 814)}`,
-      seller: this.getRandomInt(7707083893, 7710140679),
-      buyer: this.getRandomInt(7707083893, 7710140679),
-      price: this.getRandomInt(1000000, 10000000)
-    });
-    this.sendTransaction(tx);
+    
     setInterval(() => this.updateChain(), 2000);
-    setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
-    // setInterval(() => console.log(this.getPendingTransactions()), 1000);
+
+    if (this.blockHelper.getValidatorPublicKey() != null) {
+      console.log('VALIDATION STARTED');
+      setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
+    }
   }
 
   isBlockValid(block) {
@@ -42,6 +39,16 @@ exports.BlockchainHandler = class BlockchainHandler {
       this.getLastBlock(),
       block,
     );
+  }
+
+  newTestTransaction() {
+    const tx = this.transactionHelper.createTransaction({
+      property: `${this.getRandomInt(40, 47)}:${this.getRandomInt(10, 14)}:${this.getRandomInt(100000, 120000)}:${this.getRandomInt(800, 814)}`,
+      seller: this.getRandomInt(7707083893, 7710140679),
+      buyer: this.getRandomInt(7707083893, 7710140679),
+      price: this.getRandomInt(1000000, 10000000)
+    });
+    this.sendTransaction(tx);
   }
 
   addNewBlockFromPendingTransactions() {

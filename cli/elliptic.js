@@ -5,13 +5,17 @@ const CryptoJS = require('crypto-js');
 
 exports.Elliptic = class Elliptic {
   constructor() {
-    this.setValidatorPrivateKey();
-    this.setSenderPrivateKey();
     this.eddsa = new EdDSA('ed25519');
+    if (Elliptic.getValidatorPrivateKeyFile() != 0) {
+      this.setValidatorPrivateKey();
+      this.validatorKey = this.eddsa.keyFromSecret(this.validatorPrivateKey);
+      this.validatorPublicKey = this.validatorKey.getPublic('hex');
+    } else {
+      this.validatorPublicKey = null;
+    }
+    this.setSenderPrivateKey();
     this.senderKey = this.eddsa.keyFromSecret(this.senderPrivateKey);
     this.senderPublicKey = this.senderKey.getPublic('hex');
-    this.validatorKey = this.eddsa.keyFromSecret(this.validatorPrivateKey);
-    this.validatorPublicKey = this.validatorKey.getPublic('hex');
   }
 
   signTransaction(transaction) {
@@ -60,11 +64,11 @@ exports.Elliptic = class Elliptic {
   }
 
   static getSenderPrivateKeyFile() {
-    return process.argv[7];
+    return process.argv[8];
   }
 
   static getValidatorPrivateKeyPassword() {
-    return process.argv[8];
+    return process.argv[7];
   }
 
   static getSenderPrivateKeyPassword() {
