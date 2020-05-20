@@ -17,12 +17,16 @@ exports.ConnectionHandler = class ConnectionHandler {
     //this.node = { ip: this.nodeIP, port: parseInt(this.nodePort, 10) };
   }
 
+  setNode(nodeIP, nodePort) {
+    this.node = { ip: nodeIP, port: parseInt(nodePort, 10) };
+    console.log(this.node);
+  }
+
   setBlockchainHandler(blockchainHandler) {
     this.blockchainHandler = blockchainHandler;
   }
 
   async init() {
-    console.log(this.allNodes);
     Promise.resolve(await this.getAvailableNodesFull(this.allNodes));
     setInterval(() => this.getAvailableNodesFull(this.allNodes), 5000);
   }
@@ -124,6 +128,8 @@ exports.ConnectionHandler = class ConnectionHandler {
       const response = await getNodes;
       this.pushToAllNodes(node);
       if (response) {
+        if (response.result == null) return;
+        if (!ConnectionHandler.isNodeValid(node)) return;
         console.log(`Available: ${JSON.stringify(node)}`);
         const fullNode = ConnectionHandler.getFullNode(node, response.result.height);
         if (!ConnectionHandler.isInArray(fullNode, availableNodes)
@@ -192,10 +198,11 @@ exports.ConnectionHandler = class ConnectionHandler {
     await Promise.all(getNodesPromises);
     this.availableNodes = availableNodes;
     this.electronApp.updateAvailableNodes(availableNodes);
-    // this.printNodesStatus();
+    this.printNodesStatus();
   }
 
   static pushIfNotIn(targetNode, array) {
+    if (!ConnectionHandler.isNodeValid(targetNode)) return;
     if (!ConnectionHandler.isInArray(targetNode, array)) {
       array.push(targetNode);
     }
@@ -224,6 +231,10 @@ exports.ConnectionHandler = class ConnectionHandler {
 
   static isNodesEqual(node1, node2) {
     return (node1.port === node2.port && node1.ip === node2.ip);
+  }
+
+  static isNodeValid(node) {
+    return (('ip' in node) && ('port' in node));
   }
 
   static pushTransactionIfNotIn(transaction, array) {

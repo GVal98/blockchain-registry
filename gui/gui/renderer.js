@@ -18,7 +18,21 @@ function init() {
     $('#keyFileLabel').html(result.target.files[0].name);
   });
   $('#cancelSearch').on('click', () => cancelSearch());
+  $('#startServer').on('click', () => startServer());
 }
+
+function startServer() {
+  let ip = $('#ip').val();
+  let port = $('#port').val();
+  ipcRenderer.send('startServer', ip, port);
+}
+
+ipcRenderer.on('serverStarted', (event) => {
+  $('#configModal').hide();
+  $('.modal-backdrop').fadeOut();
+  $('.toast-header').removeClass('bg-danger').addClass('bg-success');
+  showNotification('Сервер успешно запущен');
+});
 
 ipcRenderer.on('transactionCreated', (event, result) => {
   if (result) {
@@ -31,6 +45,8 @@ ipcRenderer.on('transactionCreated', (event, result) => {
     showNotification('Невалидная транзакция');
   }
 });
+
+
 
 function showNotification(text) {
   $('#notification').html(text);

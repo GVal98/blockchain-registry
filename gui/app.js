@@ -5,6 +5,7 @@ const { ConnectionHandler } = require('./connection-handler');
 const { BlockchainHandler } = require('./blockchain-handler');
 const { Server } = require('./server');
 const { ElectronApp } = require('./gui/electron-app');
+const { ipcMain } = require('electron');
 
 class App {
   async run() {
@@ -29,10 +30,11 @@ class App {
 
     this.blockchainHandler.init();
     console.log('Blockchain handler started');
-/*
-    this.Server = new Server(this.blockchainHandler, this.connectionHandler);
-    await this.Server.start();
-    console.log('Server started');*/
+    ipcMain.on('startServer', async (event, ip, port) => {
+      this.Server = new Server(this.blockchainHandler, this.connectionHandler, ip, port);
+      await this.Server.start();
+      event.reply('serverStarted');
+    })
   }
 }
 

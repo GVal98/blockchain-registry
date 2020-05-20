@@ -1,11 +1,12 @@
 const express = require('express');
 
 exports.Server = class Server {
-  constructor(blockchainHandler, connectionHandler) {
+  constructor(blockchainHandler, connectionHandler, ip, port) {
     this.blockchainHandler = blockchainHandler;
     this.connectionHandler = connectionHandler;
-    this.setIP();
-    this.setPort();
+    this.ip = ip;
+    this.port = port;
+    this.connectionHandler.setNode(ip, port);
     this.server = express();
     this.server.use(express.json());
     this.addRoutes();
@@ -60,13 +61,5 @@ exports.Server = class Server {
       height: this.blockchainHandler.getHeight(),
       pendingTransactions: this.connectionHandler.getPendingTransactions(),
     };
-  }
-
-  setPort() {
-    [, , , this.port] = process.argv;
-  }
-
-  setIP() {
-    [, , this.ip] = process.argv;
   }
 };

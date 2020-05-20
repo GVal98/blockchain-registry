@@ -121,6 +121,8 @@ exports.ConnectionHandler = class ConnectionHandler {
       const response = await getNodes;
       this.pushToAllNodes(node);
       if (response) {
+        if (response.result == null) return;
+        if (!ConnectionHandler.isNodeValid(node)) return;
         // console.log(`Available: ${JSON.stringify(node)}`);
         const fullNode = ConnectionHandler.getFullNode(node, response.result.height);
         if (!ConnectionHandler.isInArray(fullNode, availableNodes)
@@ -191,6 +193,7 @@ exports.ConnectionHandler = class ConnectionHandler {
   }
 
   static pushIfNotIn(targetNode, array) {
+    if (!ConnectionHandler.isNodeValid(targetNode)) return;
     if (!ConnectionHandler.isInArray(targetNode, array)) {
       array.push(targetNode);
     }
@@ -218,6 +221,10 @@ exports.ConnectionHandler = class ConnectionHandler {
 
   static isNodesEqual(node1, node2) {
     return (node1.port === node2.port && node1.ip === node2.ip);
+  }
+
+  static isNodeValid(node) {
+    return (('ip' in node) && ('port' in node));
   }
 
   static pushTransactionIfNotIn(transaction, array) {
