@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 
 exports.Server = class Server {
   constructor(blockchainHandler, connectionHandler) {
@@ -8,6 +9,7 @@ exports.Server = class Server {
     this.setPort();
     this.server = express();
     this.server.use(express.json());
+    this.server.use(cors());
     this.addRoutes();
   }
 
