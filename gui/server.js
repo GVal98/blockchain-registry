@@ -40,10 +40,15 @@ exports.Server = class Server {
     this.addRoute('/getBlock', (json) => this.getBlock(json));
     this.addRoute('/sendTransaction', (json) => this.connectionHandler.getNewTransaction(json));
     this.addRoute('/getPendingTransactions', () => this.getPendingTransactions());
+    this.addRoute('/search', (json) => this.search(json));
   }
 
   getBlocks(json) {
     return this.blockchainHandler.getBlocks(json.startBlock, json.endBlock);
+  }
+
+  search(json) {
+    return { transactions: this.blockchainHandler.search(...Object.values(json)) };
   }
 
   getBlock(json) {

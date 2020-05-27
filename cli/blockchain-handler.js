@@ -22,13 +22,32 @@ exports.BlockchainHandler = class BlockchainHandler {
   }
 
   init() {
-    
     setInterval(() => this.updateChain(), 500);
-    //setInterval(() => this.newTestTransaction(), 4000);
+    //setInterval(() => this.newTestTransaction(), 15000);
     if (this.blockHelper.getValidatorPublicKey() != null) {
       console.log('VALIDATION STARTED');
-      setInterval(() => this.addNewBlockFromPendingTransactions(), 5000);
+      setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
     }
+  }
+
+  search(property, anyParty, seller, buyer, minPrice, maxPrice, startDate, endDate) {
+    let transactions = [];
+    //console.log(property, anyParty, seller, buyer, minPrice, maxPrice, startDate, endDate);
+    for (let i = 1; i < this.blockchain.length; i += 1) {
+      this.blockchain[i].transactions.forEach(transaction => {
+        if (!(transaction.data.price <= maxPrice || maxPrice == '')) return;
+        if (!(transaction.data.price >= minPrice || minPrice == '')) return;
+        if (!(transaction.data.property == property || property == '')) return;
+        if (!(this.blockchain[i].time <= endDate || endDate == '')) return;
+        if (!(this.blockchain[i].time >= startDate || startDate == '')) return;
+        if (!(transaction.data.seller == seller || seller == '')) return;
+        if (!(transaction.data.buyer == buyer || buyer == '')) return;
+        if (!(transaction.data.buyer == anyParty || transaction.data.seller == anyParty || anyParty == '')) return;
+        transaction.time = this.blockchain[i].time;
+        transactions.push(transaction);
+      });
+    }
+    return transactions.reverse();
   }
 
   isBlockValid(block) {

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Blockchain Registry</title>
+    <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="./font/css/open-iconic-bootstrap.min.css">
+    <script src="./bootstrap/jquery-3.5.1.min.js"></script>
+    <script src="./renderer.js"></script>
+    <script src="./bootstrap/bootstrap.bundle.min.js"></script>
+  </head>
+  <body class="overflow-hidden">
+    <div class="container-fluid">
+      <div class="row py-2">
+        <div class="col">
+          <input id="searchPropery" type="text" class="form-control" placeholder="Кадастровый номер">
+        </div>
+        <div class="col">
+          <input id="searchAnyParty" type="text" class="form-control" placeholder="ИНН">
+        </div>
+        <div class="col">
+          <input id="searchSeller" type="text" class="form-control" placeholder="ИНН продавца">
+        </div>
+        <div class="col">
+          <input id="searchBuyer" type="text" class="form-control" placeholder="ИНН покупателя">
+        </div>
+        <div class="col">
+          <input id="searchMinPrice" type="text" class="form-control" placeholder="Минимальная сумма">
+        </div>
+        <div class="col">
+          <input id="searchMaxPrice" type="text" class="form-control" placeholder="Максимальная сумма">
+        </div>
+        <div class="col">
+          <input id="searchStartDate" type="text" class="form-control" placeholder="Начальная дата">
+        </div>
+        <div class="col">
+          <input id="searchEndDate" type="text" class="form-control" placeholder="Конечная дата">
+        </div>
+        <div class="col-1">
+          <button id="search" type="button" class="btn btn-success">
+            <span class="oi oi-magnifying-glass"></span>
+          </button>   
+        </div>
+      </div>
+      <div class="row">
+        <div id="pendingTransactionsWrapper" class="col">
+          <h5 class="text-center">
+            Новые транзакции
+            <button id="openAddDialog" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#AddModal">
+              <span class="oi oi-plus"></span>
+            </button>
+          </h5>
+          <div class="row">
+            <div id="pendingTransactions" class="col overflow-auto vh-90">
+              
+            </div>
+          </div>
+        </div>
+        <div id="chainWrapper" class="col">
+          <h5 class="text-center">
+            <button id="left" type="button" class="btn btn-primary btn-sm">
+              <span class="oi oi-chevron-left"></span>
+            </button>   
+            <span id="chainName">Последние транзакции</span>
+            <button id="cancelSearch" type="button" class="btn btn-danger btn-sm d-none">
+              <span class="oi oi-circle-x"></span>
+            </button>
+            <button id="right" type="button" class="btn btn-primary btn-sm">
+              <span class="oi oi-chevron-right"></span>
+            </button>
+          </h5>
+          <div class="row">
+            <div id="chain" class="col overflow-auto vh-90">
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="AddModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Новая транзакция</h5>
+              <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="custom-file">
+                <input type="file" accept=".key" class="custom-file-input mb-1" id="keyFile">
+                <label id="keyFileLabel" class="custom-file-label overflow-hidden" for="keyFile">Выберите ключ отправителя</label>
+                <input type="password" class="form-control mb-3" id="keyPassword" placeholder="Введите пароль от ключа">
+                <input type="text" class="form-control mb-1" id="property" placeholder="Кадастровый номер">
+                <input type="text" class="form-control mb-1" id="seller" placeholder="ИНН продавца">
+                <input type="text" class="form-control mb-1" id="buyer" placeholder="ИНН покупателя">
+                <input type="text" class="form-control mb-1" id="price" placeholder="Сумма в рублях">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button id="sendTransaction" type="button" class="btn btn-success">Отправить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="configModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Конфигурация сервера</h5>
+              <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="custom-file">
+                <input type="text" class="form-control mb-1" id="ip" placeholder="Укажите ваш IP-адрес">
+                <input type="text" class="form-control mb-1" id="port" placeholder="Укажите порт для сервера">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button id="startServer" type="button" class="btn btn-success">Запустить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="toast" data-delay="5000" style="position: absolute; bottom: 10px; left: 10px; z-index: 9999;">
+        <div class="toast-header">
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div id="notification" class="toast-body">
+        </div>
+    </div>
+    </div>
+
+    
+  </body>
+</html>

@@ -11,6 +11,7 @@ exports.Server = class Server {
     this.server.use(express.json());
     this.server.use(cors());
     this.addRoutes();
+    this.addWeb();
   }
 
   start() {
@@ -19,6 +20,11 @@ exports.Server = class Server {
         .listen(this.port)
         .on('listening', resolve);
     });
+  }
+
+  addWeb() {
+    this.server.use(express.static(__dirname + '/web/'));
+    this.server.get('/web', (request, response) => response.sendFile(__dirname + '/web/index.html'));
   }
 
   addRoute(route, func) {
@@ -39,10 +45,15 @@ exports.Server = class Server {
     this.addRoute('/getBlock', (json) => this.getBlock(json));
     this.addRoute('/sendTransaction', (json) => this.connectionHandler.getNewTransaction(json));
     this.addRoute('/getPendingTransactions', () => this.getPendingTransactions());
+    this.addRoute('/search', (json) => this.search(json));
   }
 
   getBlocks(json) {
     return this.blockchainHandler.getBlocks(json.startBlock, json.endBlock);
+  }
+
+  search(json) {
+    return { transactions: this.blockchainHandler.search(...Object.values(json)) };
   }
 
   getBlock(json) {
