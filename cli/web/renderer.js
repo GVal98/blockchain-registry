@@ -6,6 +6,8 @@ let isSearch = false;
 let key;
 
 let node = `${window.location.hostname}:${window.location.port}`;
+let EdDSA;
+let eddsa;
 console.log(node);  
 
 async function init() {
@@ -28,8 +30,8 @@ async function init() {
   $('#startServer').on('click', () => startServer());
   getNewChain();
   setInterval(() => getNewChain(), 2000);
-  let EdDSA = elliptic.eddsa;
-  let eddsa = new EdDSA('ed25519');
+  EdDSA = elliptic.eddsa;
+  eddsa = new EdDSA('ed25519');
 }
 
 
@@ -128,19 +130,24 @@ async function getPendingTransactions() {
   return sendRequest('getPendingTransactions');
 }
 
-function sendTransaction() {
-  console.log(key);
-  let keyPassword = $('#keyPassword').val();
+async function sendTransaction() {
+  let transaction = {};
+  transaction.time = Date.now();
+  transaction.type = 'data';
   let property = $('#property').val();
   let seller = $('#seller').val();
   let buyer = $('#buyer').val();
   let price = $('#price').val();
-  //return sendTransactionRequest({property, seller, buyer, price});
-}
+  transaction.data = {property, seller, buyer, price};
+  let keyPassword = $('#keyPassword').val();
+  let decryptedKey = eddsa.keyFromSecret(CryptoJS.AES.decrypt(key, keyPassword).toString(CryptoJS.enc.Utf8));
+  transaction.sender = decryptedKey.getPublic('hex');
+  transaction.hash = CryptoJS.SHA256(JSON.stringify(transaction)).toString(CryptoJS.enc.Hex);
+  transaction.sign = decryptedKey.sign(transaction.hash).toHex();
 
-
-/*ipcRenderer.on('transactionCreated', (event, result) => {
-  if (result) {
+  let result = await sendTransactionRequest(transaction);
+  console.log(result);
+  if (result.result) {
     $('#AddModal').hide();
     $('.modal-backdrop').fadeOut();
     $('.toast-header').removeClass('bg-danger').addClass('bg-success');
@@ -149,7 +156,8 @@ function sendTransaction() {
     $('.toast-header').removeClass('bg-success').addClass('bg-danger');
     showNotification('Невалидная транзакция');
   }
-});*/
+}
+
 
 
 
