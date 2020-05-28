@@ -3,6 +3,7 @@ let lastBlock = 0;
 let currentBlock = false;
 let senderKeyFile = false;
 let isSearch = false;
+let key;
 
 let node = `${window.location.hostname}:${window.location.port}`;
 console.log(node);  
@@ -14,32 +15,40 @@ async function init() {
   $('#search').on('click', () => search());
   $('#sendTransaction').on('click', () => sendTransaction());
   $('#keyFile').on('change', (result) => {
-    senderKeyFile = result.target.files[0].path;
     $('#keyFileLabel').html(result.target.files[0].name);
+    let file = result.target.files[0];
+    let reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = (result) => {
+      key = result.target.result;
+      console.log(key);
+    };
   });
   $('#cancelSearch').on('click', () => cancelSearch());
   $('#startServer').on('click', () => startServer());
   getNewChain();
   setInterval(() => getNewChain(), 2000);
+  let EdDSA = elliptic.eddsa;
+  let eddsa = new EdDSA('ed25519');
 }
 
 
 async function getNewChain() {
   if (currentBlock === false || lastBlock - currentBlock < 5) {
-    console.log('Updating');
+    //console.log('Updating');
     let pendingTransactionsResponse = await getPendingTransactions();
     updatePendingTransactions(pendingTransactionsResponse.result.pendingTransactions)
     let nodeHeight = pendingTransactionsResponse.result.height;
-    console.log('Node height: ' + nodeHeight);
+    //console.log('Node height: ' + nodeHeight);
     if (nodeHeight > lastBlock) {
-      console.log('Getting new blocks');
+      //console.log('Getting new blocks');
       lastBlock = nodeHeight;
       currentBlock = lastBlock;
       updateButtons();
       let getBlocksResponse = await getBlocks(nodeHeight-4, nodeHeight);
       insertTransactionsFromBlocks(getBlocksResponse.result.reverse());
     }
-  } else console.log('Not a main page');
+  } //else console.log('Not a main page');
 }
 
 function updateChain(result) {
@@ -84,7 +93,7 @@ async function nextPage() {
     insertTransactionsFromBlocks(response.result.reverse());
     document.getElementById('chainName').textContent="Транзакции";
   } else {
-    console.log('this');
+    //console.log('this');
     currentBlock = lastBlock;
     let getBlocksResponse = await getBlocks(lastBlock-4, lastBlock);
     insertTransactionsFromBlocks(getBlocksResponse.result.reverse());
@@ -111,8 +120,22 @@ async function sendSearch(filters) {
   return sendRequest('search', filters);
 }
 
+async function sendTransactionRequest(transaction) {
+  return sendRequest('sendTransaction', transaction);
+}
+
 async function getPendingTransactions() {
   return sendRequest('getPendingTransactions');
+}
+
+function sendTransaction() {
+  console.log(key);
+  let keyPassword = $('#keyPassword').val();
+  let property = $('#property').val();
+  let seller = $('#seller').val();
+  let buyer = $('#buyer').val();
+  let price = $('#price').val();
+  //return sendTransactionRequest({property, seller, buyer, price});
 }
 
 
@@ -167,8 +190,6 @@ async function search() {
   inseartSearch(response.result);
 }
 
-//ipcRenderer.on('searchDone', (event, result) => inseartSearch(result));
-
 function inseartSearch(result) {
   document.getElementById('chainName').textContent="Результаты";
   currentBlock = false;
@@ -190,15 +211,6 @@ async function cancelSearch() {
   let getBlocksResponse = await getBlocks(lastBlock-4, lastBlock);
   insertTransactionsFromBlocks(getBlocksResponse.result.reverse());
   updateButtons();
-}
-
-function sendTransaction() {
-  let keyPassword = $('#keyPassword').val();
-  let property = $('#property').val();
-  let seller = $('#seller').val();
-  let buyer = $('#buyer').val();
-  let price = $('#price').val();
-  ipcRenderer.send('sendTransaction', senderKeyFile, keyPassword, property, seller, buyer, price);
 }
 
 function updateButtons() {
