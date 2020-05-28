@@ -13,9 +13,14 @@ exports.Elliptic = class Elliptic {
     } else {
       this.validatorPublicKey = null;
     }
-    this.setSenderPrivateKey();
-    this.senderKey = this.eddsa.keyFromSecret(this.senderPrivateKey);
-    this.senderPublicKey = this.senderKey.getPublic('hex');
+    if (typeof(Elliptic.getSenderPrivateKeyFile()) != 'undefined') {
+      console.log(Elliptic.getSenderPrivateKeyFile());
+      this.setSenderPrivateKey();
+      this.senderKey = this.eddsa.keyFromSecret(this.senderPrivateKey);
+      this.senderPublicKey = this.senderKey.getPublic('hex');
+    } else {
+      this.senderPublicKey = null;
+    }
   }
 
   signTransaction(transaction) {

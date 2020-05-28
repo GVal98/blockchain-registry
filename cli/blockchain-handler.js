@@ -23,10 +23,15 @@ exports.BlockchainHandler = class BlockchainHandler {
 
   init() {
     setInterval(() => this.updateChain(), 500);
-    //setInterval(() => this.newTestTransaction(), 3000);
+
     if (this.blockHelper.getValidatorPublicKey() != null) {
       console.log('VALIDATION STARTED');
       setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
+    }
+
+    if (this.transactionHelper.getSenderPublicKey() != null) {
+      console.log('TEST TRANSACTIONS ACTIVATED')
+      setInterval(() => this.newTestTransaction(), 10000);
     }
   }
 

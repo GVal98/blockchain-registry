@@ -18,6 +18,10 @@ exports.TransactionHelper = class TransactionHelper {
      && TransactionHelper.isSenderValid(transaction.sender, senders));
   }
 
+  getSenderPublicKey() {
+    return this.elliptic.senderPublicKey;
+  }
+
   static isSenderValid(sender, senders) {
     return senders.includes(sender);
   }
