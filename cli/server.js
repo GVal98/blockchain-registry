@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const forge = require('node-forge');
+const https = require('https');
 
 exports.Server = class Server {
   constructor(blockchainHandler, connectionHandler) {
@@ -8,6 +10,7 @@ exports.Server = class Server {
     this.setIP();
     this.setPort();
     this.server = express();
+    this.certs = this.generateCerts();
     this.server.use(express.json());
     this.server.use(cors());
     this.addRoutes();
@@ -16,7 +19,7 @@ exports.Server = class Server {
 
   start() {
     return new Promise((resolve) => {
-      this.server
+      https.createServer(this.certs, this.server)
         .listen(this.port)
         .on('listening', resolve);
     });
@@ -81,5 +84,79 @@ exports.Server = class Server {
 
   setIP() {
     [, , this.ip] = process.argv;
+  }
+
+  generateCerts() {
+    var pki = forge.pki;
+    var keys = pki.rsa.generateKeyPair(2048);
+    var cert = pki.createCertificate();
+    cert.publicKey = keys.publicKey;
+    cert.serialNumber = '01';
+    cert.validity.notBefore = new Date();
+    cert.validity.notAfter = new Date();
+    cert.validity.notAfter.setFullYear(cert.validity.notBefore.getFullYear() + 1);
+    var attrs = [{
+      name: 'commonName',
+      value: 'example.org'
+    }, {
+      name: 'countryName',
+      value: 'US'
+    }, {
+      shortName: 'ST',
+      value: 'Virginia'
+    }, {
+      name: 'localityName',
+      value: 'Blacksburg'
+    }, {
+      name: 'organizationName',
+      value: 'Test'
+    }, {
+      shortName: 'OU',
+      value: 'Test'
+    }];
+    cert.setSubject(attrs);
+    cert.setIssuer(attrs);
+    cert.setExtensions([{
+      name: 'basicConstraints',
+      cA: true
+    }, {
+      name: 'keyUsage',
+      keyCertSign: true,
+      digitalSignature: true,
+      nonRepudiation: true,
+      keyEncipherment: true,
+      dataEncipherment: true
+    }, {
+      name: 'extKeyUsage',
+      serverAuth: true,
+      clientAuth: true,
+      codeSigning: true,
+      emailProtection: true,
+      timeStamping: true
+    }, {
+      name: 'nsCertType',
+      client: true,
+      server: true,
+      email: true,
+      objsign: true,
+      sslCA: true,
+      emailCA: true,
+      objCA: true
+    }, {
+      name: 'subjectAltName',
+      altNames: [{
+        type: 6, // URI
+        value: 'http://example.org/webid#me'
+      }, {
+        type: 7, // IP
+        ip: '127.0.0.1'
+      }]
+    }, {
+      name: 'subjectKeyIdentifier'
+    }]);
+    cert.sign(keys.privateKey);
+ 
+  var result = {cert: pki.certificateToPem(cert), key: pki.privateKeyToPem(keys.privateKey)};
+  return (result)
   }
 };

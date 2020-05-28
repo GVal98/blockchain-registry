@@ -1,5 +1,5 @@
 const needle = require('needle');
-
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 exports.Request = class Request {
   static send(node, func, data) {
     return new Promise((resolve) => {
@@ -18,7 +18,7 @@ exports.Request = class Request {
   }
 
   static getURL(node, func) {
-    return `http://${node.ip}:${node.port}/${func}`;
+    return `https://${node.ip}:${node.port}/${func}`;
   }
 
   static getNodes(node, thisNode) {
