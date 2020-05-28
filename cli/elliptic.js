@@ -64,7 +64,7 @@ exports.Elliptic = class Elliptic {
   }
 
   static getSenderPrivateKeyFile() {
-    return process.argv[8];
+    return process.argv[10];
   }
 
   static getValidatorPrivateKeyPassword() {
@@ -72,7 +72,7 @@ exports.Elliptic = class Elliptic {
   }
 
   static getSenderPrivateKeyPassword() {
-    return process.argv[9];
+    return process.argv[11];
   }
 
   setValidatorPrivateKey() {

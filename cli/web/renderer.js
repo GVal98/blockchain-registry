@@ -104,7 +104,7 @@ async function nextPage() {
 }
 
 async function sendRequest(func, json) {
-  let response = await fetch(`http://${node}/${func}`, {
+  let response = await fetch(`https://${node}/${func}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8'

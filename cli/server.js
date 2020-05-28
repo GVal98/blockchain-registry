@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const forge = require('node-forge');
 const https = require('https');
+const fs = require('fs');
 
 exports.Server = class Server {
   constructor(blockchainHandler, connectionHandler) {
@@ -87,76 +88,82 @@ exports.Server = class Server {
   }
 
   generateCerts() {
-    var pki = forge.pki;
-    var keys = pki.rsa.generateKeyPair(2048);
-    var cert = pki.createCertificate();
-    cert.publicKey = keys.publicKey;
-    cert.serialNumber = '01';
-    cert.validity.notBefore = new Date();
-    cert.validity.notAfter = new Date();
-    cert.validity.notAfter.setFullYear(cert.validity.notBefore.getFullYear() + 1);
-    var attrs = [{
-      name: 'commonName',
-      value: 'example.org'
-    }, {
-      name: 'countryName',
-      value: 'US'
-    }, {
-      shortName: 'ST',
-      value: 'Virginia'
-    }, {
-      name: 'localityName',
-      value: 'Blacksburg'
-    }, {
-      name: 'organizationName',
-      value: 'Test'
-    }, {
-      shortName: 'OU',
-      value: 'Test'
-    }];
-    cert.setSubject(attrs);
-    cert.setIssuer(attrs);
-    cert.setExtensions([{
-      name: 'basicConstraints',
-      cA: true
-    }, {
-      name: 'keyUsage',
-      keyCertSign: true,
-      digitalSignature: true,
-      nonRepudiation: true,
-      keyEncipherment: true,
-      dataEncipherment: true
-    }, {
-      name: 'extKeyUsage',
-      serverAuth: true,
-      clientAuth: true,
-      codeSigning: true,
-      emailProtection: true,
-      timeStamping: true
-    }, {
-      name: 'nsCertType',
-      client: true,
-      server: true,
-      email: true,
-      objsign: true,
-      sslCA: true,
-      emailCA: true,
-      objCA: true
-    }, {
-      name: 'subjectAltName',
-      altNames: [{
-        type: 6, // URI
-        value: 'http://example.org/webid#me'
+    if (process.argv[8] == 0 || process.argv[9] == 0) {
+      var pki = forge.pki;
+      var keys = pki.rsa.generateKeyPair(2048);
+      var cert = pki.createCertificate();
+      cert.publicKey = keys.publicKey;
+      cert.serialNumber = '01';
+      cert.validity.notBefore = new Date();
+      cert.validity.notAfter = new Date();
+      cert.validity.notAfter.setFullYear(cert.validity.notBefore.getFullYear() + 1);
+      var attrs = [{
+        name: 'commonName',
+        value: 'example.org'
       }, {
-        type: 7, // IP
-        ip: '127.0.0.1'
-      }]
-    }, {
-      name: 'subjectKeyIdentifier'
-    }]);
-    cert.sign(keys.privateKey);
- 
-  var result = {cert: pki.certificateToPem(cert), key: pki.privateKeyToPem(keys.privateKey)};
+        name: 'countryName',
+        value: 'US'
+      }, {
+        shortName: 'ST',
+        value: 'Virginia'
+      }, {
+        name: 'localityName',
+        value: 'Blacksburg'
+      }, {
+        name: 'organizationName',
+        value: 'Test'
+      }, {
+        shortName: 'OU',
+        value: 'Test'
+      }];
+      cert.setSubject(attrs);
+      cert.setIssuer(attrs);
+      cert.setExtensions([{
+        name: 'basicConstraints',
+        cA: true
+      }, {
+        name: 'keyUsage',
+        keyCertSign: true,
+        digitalSignature: true,
+        nonRepudiation: true,
+        keyEncipherment: true,
+        dataEncipherment: true
+      }, {
+        name: 'extKeyUsage',
+        serverAuth: true,
+        clientAuth: true,
+        codeSigning: true,
+        emailProtection: true,
+        timeStamping: true
+      }, {
+        name: 'nsCertType',
+        client: true,
+        server: true,
+        email: true,
+        objsign: true,
+        sslCA: true,
+        emailCA: true,
+        objCA: true
+      }, {
+        name: 'subjectAltName',
+        altNames: [{
+          type: 6, // URI
+          value: 'http://example.org/webid#me'
+        }, {
+          type: 7, // IP
+          ip: '127.0.0.1'
+        }]
+      }, {
+        name: 'subjectKeyIdentifier'
+      }]);
+      cert.sign(keys.privateKey);
+      console.log('Self signed cert');
+      var result = {cert: pki.certificateToPem(cert), key: pki.privateKeyToPem(keys.privateKey)};
+    }
+    else {
+      console.log('Using cert file');
+      var result = {cert: fs.readFileSync(process.argv[8]), key: fs.readFileSync(process.argv[9])};
+    }
   return (result)
   }
 };
