@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "Simple registry on blockchain",
   "main": "app.js",
+  "bin": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dist": "pkg ."
   },
   "repository": {
     "type": "git",
@@ -30,6 +32,7 @@
     "@types/node": "^13.13.4",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.2"
+    "eslint-plugin-import": "^2.20.2",
+    "pkg": "^4.4.8"
   }
 }
