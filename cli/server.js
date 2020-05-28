@@ -12,7 +12,7 @@ exports.Server = class Server {
     this.setPort();
     this.server = express();
     this.certs = this.generateCerts();
-    this.server.use(express.json());
+    this.server.use(express.json({limit: '2048kb'}));
     this.server.use(cors());
     this.addRoutes();
     this.addWeb();
