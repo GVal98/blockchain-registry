@@ -5,6 +5,7 @@
     <title>Blockchain Registry</title>
     <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="./bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="./font/css/open-iconic-bootstrap.min.css">
@@ -14,54 +15,41 @@
     <script src="./elliptic.min.js"></script>
     <script src="./bower_components/crypto-js/crypto-js.js"></script>
   </head>
-  <body class="overflow-hidden">
+  <body class="overflow-md-hidden">
     <div class="container-fluid">
       <div class="row py-2">
-        <div class="col">
+        <div class="col-12 mb-1 col-md mb-md-0">
           <input id="searchPropery" type="text" class="form-control" placeholder="Кадастровый номер">
         </div>
-        <div class="col">
+        <div class="col-12 mb-1 col-md mb-md-0">
           <input id="searchAnyParty" type="text" class="form-control" placeholder="ИНН">
         </div>
-        <div class="col">
+        <div class="col-12 mb-1 col-md mb-md-0">
           <input id="searchSeller" type="text" class="form-control" placeholder="ИНН продавца">
         </div>
-        <div class="col">
+        <div class="col-12 mb-1 col-md mb-md-0">
           <input id="searchBuyer" type="text" class="form-control" placeholder="ИНН покупателя">
         </div>
-        <div class="col">
+        <div class="col-12 mb-1 col-md mb-md-0">
           <input id="searchMinPrice" type="text" class="form-control" placeholder="Минимальная сумма">
         </div>
-        <div class="col">
+        <div class="col-12 mb-1 col-md mb-md-0">
           <input id="searchMaxPrice" type="text" class="form-control" placeholder="Максимальная сумма">
         </div>
-        <div class="col">
+        <div class="col-12 mb-1 col-md mb-md-0">
           <input id="searchStartDate" type="text" class="form-control" placeholder="Начальная дата">
         </div>
-        <div class="col">
+        <div class="col-12 mb-1 col-md mb-md-0">
           <input id="searchEndDate" type="text" class="form-control" placeholder="Конечная дата">
         </div>
-        <div class="col-1">
-          <button id="search" type="button" class="btn btn-success">
+        <div class="col-12 mb-1 col-md-1 mb-md-0">
+          <button id="search" type="button" class="btn btn-success btn-block">
             <span class="oi oi-magnifying-glass"></span>
           </button>   
         </div>
       </div>
       <div class="row">
-        <div id="pendingTransactionsWrapper" class="col">
-          <h5 class="text-center">
-            Новые транзакции
-            <button id="openAddDialog" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#AddModal">
-              <span class="oi oi-plus"></span>
-            </button>
-          </h5>
-          <div class="row">
-            <div id="pendingTransactions" class="col overflow-auto vh-90">
-              
-            </div>
-          </div>
-        </div>
-        <div id="chainWrapper" class="col">
+        <div id="chainWrapper" class="col-12 col-md order-md-2">
           <h5 class="text-center">
             <button id="left" type="button" class="btn btn-primary btn-sm">
               <span class="oi oi-chevron-left"></span>
@@ -76,6 +64,19 @@
           </h5>
           <div class="row">
             <div id="chain" class="col overflow-auto vh-90">
+              
+            </div>
+          </div>
+        </div>
+        <div id="pendingTransactionsWrapper" class="col-12 col-md order-md-1">
+          <h5 class="text-center">
+            Новые транзакции
+            <button id="openAddDialog" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#AddModal">
+              <span class="oi oi-plus"></span>
+            </button>
+          </h5>
+          <div class="row">
+            <div id="pendingTransactions" class="col overflow-auto vh-90">
               
             </div>
           </div>
