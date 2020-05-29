@@ -34,5 +34,8 @@
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
     "pkg": "^4.4.8"
+  },
+  "pkg": {
+    "assets": "web/**/*"
   }
 }
