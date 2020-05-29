@@ -14,7 +14,7 @@ exports.Elliptic = class Elliptic {
       this.validatorPublicKey = null;
     }
     if (typeof(Elliptic.getSenderPrivateKeyFile()) != 'undefined') {
-      console.log(Elliptic.getSenderPrivateKeyFile());
+      //console.log(Elliptic.getSenderPrivateKeyFile());
       this.setSenderPrivateKey();
       this.senderKey = this.eddsa.keyFromSecret(this.senderPrivateKey);
       this.senderPublicKey = this.senderKey.getPublic('hex');

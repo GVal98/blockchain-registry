@@ -12,7 +12,7 @@ class App {
 
     const electronApp = new ElectronApp();
     await electronApp.run();
-    console.log('Electron app started');
+    // console.log('Electron app started');
     this.electronApp = electronApp.getApp();
     this.appPath = this.electronApp.getAppPath();
     this.elliptic = new Elliptic();
@@ -26,10 +26,10 @@ class App {
     this.blockchainHandler.setConnectionHandler(this.connectionHandler);
 
     await this.connectionHandler.init();
-    console.log('Connection handler started');
+    // console.log('Connection handler started');
 
     this.blockchainHandler.init();
-    console.log('Blockchain handler started');
+    // console.log('Blockchain handler started');
     ipcMain.on('startServer', async (event, ip, port) => {
       this.Server = new Server(this.blockchainHandler, this.connectionHandler, ip, port);
       await this.Server.start();

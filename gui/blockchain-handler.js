@@ -32,7 +32,7 @@ exports.BlockchainHandler = class BlockchainHandler {
     if (start < 0) {
       start = 0;
     }
-    console.log(start, end);
+    // console.log(start, end);
     return { chain: this.blockchain.slice(start, end).reverse(), height: this.getHeight() };
   }
 
@@ -45,7 +45,7 @@ exports.BlockchainHandler = class BlockchainHandler {
     // this.sendTransaction(tx);
     setInterval(() => this.updateChain(), 2000);
     // setInterval(() => this.addNewBlockFromPendingTransactions(), 3000);
-    // setInterval(() => console.log(this.getPendingTransactions()), 1000);
+    // setInterval(() => // console.log(this.getPendingTransactions()), 1000);
   }
 
   createAndSendTransaction(senderKeyFile, senderKeyPassword, property, seller, buyer, price) {
@@ -147,22 +147,22 @@ exports.BlockchainHandler = class BlockchainHandler {
   }
 
   async updateChain() {
-    console.log('Updating chain');
+    // console.log('Updating chain');
     const maxNode = await this.connectionHandler.getHighestNode();
     if (maxNode === null) {
-      console.log('No nodes available');
+      // console.log('No nodes available');
       return;
     }
 
     if (this.getHeight() >= maxNode.height) {
-      console.log('Blockhain is already updated');
+      // console.log('Blockhain is already updated');
       return;
     }
 
     for (let i = this.blockchain.length; i <= maxNode.height; i += 1) {
       // eslint-disable-next-line no-await-in-loop
       const newBlock = await ConnectionHandler.getNewBlock(maxNode, i);
-      console.log(newBlock);
+      // console.log(newBlock);
       if (newBlock === null) {
         this.updateChain();
         return;
@@ -170,7 +170,7 @@ exports.BlockchainHandler = class BlockchainHandler {
       if (!this.isBlockValid(newBlock)) {
         this.connectionHandler.addBadNode(maxNode);
         this.updateChain();
-        console.log('Block is invalid');
+        // console.log('Block is invalid');
         return;
       }
       this.addNewBlock(newBlock, i);
@@ -183,22 +183,22 @@ exports.BlockchainHandler = class BlockchainHandler {
     }
     newBlocks.forEach((block) => {
       if (!this.isBlockValid(block)) {
-        console.log('Block is invalid');
+        // console.log('Block is invalid');
         return;
       }
       this.addNewBlock(block);
     }); */
-  // console.log('Chain:');
-  // console.log(this.blockchain);
+  // // console.log('Chain:');
+  // // console.log(this.blockchain);
 
   addNewBlock(block, height) {
     this.connectionHandler.removePendingTransactions(block.transactions);
     this.blockchain[height] = block;
     this.electronApp.updateChain(this.getLastBlocks(5));
-    console.log('New block:');
-    console.log(JSON.stringify(block));
-    //console.log('Chain:');
-    //console.log(this.blockchain);
+    // console.log('New block:');
+    // console.log(JSON.stringify(block));
+    //// console.log('Chain:');
+    //// console.log(this.blockchain);
     this.saveChain();
   }
 
@@ -211,9 +211,9 @@ exports.BlockchainHandler = class BlockchainHandler {
   }
 
   saveChain() {
-    console.log('Saving chain');
+    // console.log('Saving chain');
     fs.writeFileSync(this.blockchainFile, JSON.stringify(this.blockchain));
-    console.log('Chain saved');
+    // console.log('Chain saved');
   }
 
   getBlocks(startBlock, endBlock) {

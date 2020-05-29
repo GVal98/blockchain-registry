@@ -135,22 +135,22 @@ exports.BlockchainHandler = class BlockchainHandler {
   }
 
   async updateChain() {
-    console.log('Updating chain');
+    //console.log('Updating chain');
     const maxNode = await this.connectionHandler.getHighestNode();
     if (maxNode === null) {
-      console.log('No nodes available');
+      //console.log('No nodes available');
       return;
     }
 
     if (this.getHeight() >= maxNode.height) {
-      console.log('Blockhain is already updated');
+      //console.log('Blockhain is already updated');
       return;
     }
 
     for (let i = this.blockchain.length; i <= maxNode.height; i += 1) {
       // eslint-disable-next-line no-await-in-loop
       const newBlock = await ConnectionHandler.getNewBlock(maxNode, i);
-      console.log(newBlock);
+      //console.log(newBlock);
       if (newBlock === null) {
         this.updateChain();
         return;
@@ -158,7 +158,7 @@ exports.BlockchainHandler = class BlockchainHandler {
       if (!this.isBlockValid(newBlock)) {
         this.connectionHandler.addBadNode(maxNode);
         this.updateChain();
-        console.log('Block is invalid');
+        //console.log('Block is invalid');
         return;
       }
       this.addNewBlock(newBlock, i);
@@ -183,16 +183,16 @@ exports.BlockchainHandler = class BlockchainHandler {
     this.connectionHandler.removePendingTransactions(block.transactions);
     this.blockchain[height] = block;
     console.log('New block:');
-    console.log(JSON.stringify(block));
+    console.log(block);
     //console.log('Chain:');
     //console.log(JSON.stringify(this.blockchain));
     this.saveChain();
   }
 
   saveChain() {
-    console.log('Saving chain');
+    //console.log('Saving chain');
     fs.writeFileSync(BlockchainHandler.getBlockchainFile(), JSON.stringify(this.blockchain));
-    console.log('Chain saved');
+    //console.log('Chain saved');
   }
 
   static getBlockchainFile() {

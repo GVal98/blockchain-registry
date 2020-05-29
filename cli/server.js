@@ -157,7 +157,7 @@ exports.Server = class Server {
         name: 'subjectKeyIdentifier'
       }]);
       cert.sign(keys.privateKey);
-      console.log('Self signed cert');
+      console.log('Using self signed cert');
       var result = {cert: pki.certificateToPem(cert), key: pki.privateKeyToPem(keys.privateKey)};
     }
     else {

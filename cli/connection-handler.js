@@ -26,17 +26,17 @@ exports.ConnectionHandler = class ConnectionHandler {
 
   addBadNode(badNode) {
     ConnectionHandler.pushIfNotIn(badNode, this.badNodes);
-    console.log('BAD:');
-    console.log(this.badNodes);
+    //console.log('BAD:');
+    //console.log(this.badNodes);
     this.availableNodes = this.availableNodes.filter(
       (node) => !ConnectionHandler.isNodesEqual(node, badNode),
     );
-    console.log('AVAL:');
-    console.log(this.availableNodes);
+    //console.log('AVAL:');
+    //console.log(this.availableNodes);
   }
 
   static async getNewBlocks(highestNode, currentHeight) {
-    console.log(`Updating from: ${JSON.stringify(highestNode)}`);
+    //console.log(`Updating from: ${JSON.stringify(highestNode)}`);
     const newBlocks = await ConnectionHandler.downloadNewBlocks(highestNode, currentHeight);
     // console.log('New blocks:');
     // console.log(newBlocks);
@@ -47,7 +47,7 @@ exports.ConnectionHandler = class ConnectionHandler {
   }
 
   static async getNewBlock(highestNode, blockHeight) {
-    console.log(`Updating from: ${JSON.stringify(highestNode)}`);
+    //console.log(`Updating from: ${JSON.stringify(highestNode)}`);
     const newBlock = await Request.getBlock(highestNode, blockHeight);
     // console.log('New blocks:');
     // console.log(newBlocks);
@@ -174,7 +174,7 @@ exports.ConnectionHandler = class ConnectionHandler {
       ConnectionHandler.pushTransactionIfNotIn(transaction, this.pendingTransactions);
       return true;
     }
-    console.log('Invallid transaction');
+    // console.log('Invallid transaction');
     return false;
   }
 
@@ -230,7 +230,7 @@ exports.ConnectionHandler = class ConnectionHandler {
 
   static pushTransactionIfNotIn(transaction, array) {
     if (TransactionHelper.isTransactionsInArray(transaction, array)) {
-      console.log('Transaction is already in pending');
+      // console.log('Transaction is already in pending');
       return false;
     }
     // console.log('ALL TRANSACTIONS:');
@@ -261,11 +261,11 @@ exports.ConnectionHandler = class ConnectionHandler {
   }
 
   printNodesStatus() {
-    console.log();
+    //console.log();
     console.log('Available nodes:');
     console.log(this.availableNodes);
-    console.log('All nodes:');
-    console.log(this.allNodes);
-    console.log();
+    //console.log('All nodes:');
+    //console.log(this.allNodes);
+    //console.log();
   }
 };

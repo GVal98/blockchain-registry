@@ -29,7 +29,7 @@ exports.BlockHelper = class BlockHelper {
     }
     const uniqTranasctions = [...new Set(transactions.map((transaction) => transaction.hash))];
     if (uniqTranasctions.length !== transactions.length) {
-      console.log(`${uniqTranasctions.length} !== ${transactions.length}`);
+      // console.log(`${uniqTranasctions.length} !== ${transactions.length}`);
       return false;
     }
     let isBlockTransactionsValid = true;
@@ -60,7 +60,7 @@ exports.BlockHelper = class BlockHelper {
     if (block.time > previousBlock.time && block.time < Date.now()) {
       return true;
     }
-    console.log('Time invalid');
+    // console.log('Time invalid');
     return false;
   }
 
