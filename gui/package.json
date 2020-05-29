@@ -41,12 +41,15 @@
   "build": {
     "appId": "com.gval98.blockchain-registry",
     "productName": "Blockchain Registry",
+    "linux": {
+      "target": "AppImage"
+    },
     "win": {
-      "target": "NSIS",
-      "nsis": {
-        "allowToChangeInstallationDirectory": true,
-        "oneClick": false
-      }
+      "target": "NSIS"
+    },    
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false
     }
   }
 }
