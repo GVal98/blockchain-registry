@@ -1,0 +1,22 @@
+{
+  "name": "utils",
+  "version": "1.0.0",
+  "description": "",
+  "main": "blockchain-utility.js",
+  "bin": "blockchain-utility.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node blockchain-utility.js",
+    "dist": "pkg ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^4.0.0",
+    "elliptic": "^6.5.2",
+    "read": "^1.0.7"
+  },
+  "devDependencies": {
+    "pkg": "^4.4.8"
+  }
+}

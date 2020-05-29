@@ -4,12 +4,12 @@ const crypto = require('crypto');
 const fs = require('fs');
 const read = require('read');
 
-class KeyGen {
-  static createNewKey() {
+exports.Keygen = class Keygen {
+  createNewKey() {
     read({prompt: 'Enter new password:', silent: true, replace: '*'}, (error, password) => {
       read({prompt: 'Repeat password:', silent: true, replace: '*'}, (error, password2) => {
         if (password === password2) {
-          const privateKeyFile = `${process.argv[2]}.key`;
+          const privateKeyFile = `${process.argv[3]}.key`;
           const eddsa = new EdDSA('ed25519');
           const key = eddsa.keyFromSecret(crypto.randomBytes(16));
           const publicKey = key.getPublic('hex');
@@ -21,12 +21,10 @@ class KeyGen {
         }
         else {
           console.log('Error: Password missmatch');
-          KeyGen.createNewKey();
+          this.createNewKey();
         }
       })
     })
     
   }
 }
-
-KeyGen.createNewKey();
