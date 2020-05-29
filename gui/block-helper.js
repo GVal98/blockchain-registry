@@ -25,11 +25,13 @@ exports.BlockHelper = class BlockHelper {
 
   isAllTransactionsValid(senders, allTransactions, transactions) {
     if (transactions.length <= 0) {
+      console.log('EMPTY TRANSACTION');
       return false;
     }
     const uniqTranasctions = [...new Set(transactions.map((transaction) => transaction.hash))];
     if (uniqTranasctions.length !== transactions.length) {
-      // console.log(`${uniqTranasctions.length} !== ${transactions.length}`);
+      console.log('TRANSACTION DUBLICATE IN BLOCK');
+      console.log(`${uniqTranasctions.length} !== ${transactions.length}`);
       return false;
     }
     let isBlockTransactionsValid = true;
@@ -46,22 +48,43 @@ exports.BlockHelper = class BlockHelper {
   }
 
   isBlockValid(senders, allTransactions, validators, previousBlock, block) {
-    return (
-      BlockHelper.isBlockHashValid(block)
-      && this.isAllTransactionsValid(senders, allTransactions, block.transactions)
-      && this.isBlockSignValid(block)
-      && BlockHelper.isBlockPreviousHashValid(previousBlock, block)
-      && BlockHelper.canValidatorSignBlockForTime(validators, block.validator, block.time)
-      && BlockHelper.isBlockTimeValid(previousBlock, block)
-    );
+    if (!BlockHelper.isBlockHashValid(block)) {
+      console.log('BLOCK HASH INVALID');
+      return false;
+    }
+    if (!this.isAllTransactionsValid(senders, allTransactions, block.transactions)) {
+      console.log('TRANSACTIONS INVALID');
+      return false;
+    }
+    if (!this.isBlockSignValid(block)) {
+      console.log('BLOCK SIGN INVALID');
+      return false;
+    }
+    if (!BlockHelper.isBlockPreviousHashValid(previousBlock, block)) {
+      console.log('BLOCK PREVIOUS HASH INVALID');
+      return false;
+    }
+    if (!BlockHelper.canValidatorSignBlockForTime(validators, block.validator, block.time)) {
+      console.log('VALIDATOR INVALID');
+      return false;
+    }
+    if (!BlockHelper.isBlockTimeValid(previousBlock, block)) {
+      console.log('BLOCK TIME INVALID');
+      return false;
+    }
+    return true;
   }
 
   static isBlockTimeValid(previousBlock, block) {
-    if (block.time > previousBlock.time && block.time < Date.now()) {
-      return true;
+    if (block.time < previousBlock.time) {
+      console.log('BLOCK TIME OLDER THAN PREVIOUS');
+      return false;
     }
-    // console.log('Time invalid');
-    return false;
+    if ((block.time-9000) > Date.now()) {
+      console.log('BLOCK TIME NEWER THAN CURRENT TIME');
+      return false;
+    }
+    return true;
   }
 
   static isBlockPreviousHashValid(previousBlock, block) {

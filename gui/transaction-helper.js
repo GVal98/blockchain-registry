@@ -14,9 +14,19 @@ exports.TransactionHelper = class TransactionHelper {
   }
 
   isTransactionValid(senders, allTransactions, transaction) {
-    return (this.elliptic.verifyTransactionSign(transaction)
-     && !TransactionHelper.isTransactionsInArray(transaction, allTransactions)
-     && TransactionHelper.isSenderValid(transaction.sender, senders));
+    if (!this.elliptic.verifyTransactionSign(transaction)) {
+      console.log('TRANSACTION SIGN INVALID');
+      return false;
+    }
+    if (TransactionHelper.isTransactionsInArray(transaction, allTransactions)) {
+      console.log('TRANSACTION ALREADY IN CHAIN');
+      return false;
+    }
+    if (!TransactionHelper.isSenderValid(transaction.sender, senders)) {
+      console.log('SENDER INVALID');
+      return false;
+    }
+    return true;
   }
 
   static isSenderValid(sender, senders) {

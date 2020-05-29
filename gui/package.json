@@ -38,6 +38,7 @@
     "eslint-plugin-import": "^2.20.2"
   },
   "build": {
+    "asar": false,
     "appId": "com.gval98.blockchain-registry",
     "productName": "Blockchain Registry",
     "target": "NSIS",
