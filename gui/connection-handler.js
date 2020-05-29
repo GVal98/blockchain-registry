@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { Request } = require('./request');
 const { TransactionHelper } = require('./transaction-helper');
+const { ipcMain } = require('electron');
 
 exports.ConnectionHandler = class ConnectionHandler {
   constructor(transactionHelper, nodesFile, electronApp) {
@@ -15,6 +16,9 @@ exports.ConnectionHandler = class ConnectionHandler {
     //[, , this.nodeIP] = process.argv;
     //[, , , this.nodePort] = process.argv;
     //this.node = { ip: this.nodeIP, port: parseInt(this.nodePort, 10) };
+    ipcMain.on('windowReady', (event) => {
+      this.electronApp.updateAvailableNodes(this.availableNodes);
+    });
   }
 
   setNode(nodeIP, nodePort) {
