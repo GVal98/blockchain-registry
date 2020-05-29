@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
-    "dist": "electron-builder"
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux"
   },
   "repository": {
     "type": "git",
@@ -38,13 +39,14 @@
     "eslint-plugin-import": "^2.20.2"
   },
   "build": {
-    "asar": false,
     "appId": "com.gval98.blockchain-registry",
     "productName": "Blockchain Registry",
-    "target": "NSIS",
-    "nsis": {
-      "allowToChangeInstallationDirectory": true,
-      "oneClick": false
+    "win": {
+      "target": "NSIS",
+      "nsis": {
+        "allowToChangeInstallationDirectory": true,
+        "oneClick": false
+      }
     }
   }
 }
