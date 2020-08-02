@@ -22,7 +22,7 @@
     "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
     "dotenv": "^8.2.0",
-    "elliptic": "^6.5.2",
+    "elliptic": "^6.5.3",
     "express": "^4.17.1",
     "needle": "^2.4.1",
     "node-forge": "^0.9.1",
