@@ -33,10 +33,13 @@ Private keys for sending data: https://drive.google.com/drive/folders/196F09Rt8x
 
 
 Desktop app:
+
 ![Screenshot](https://i.ibb.co/VqbD5Q1/bc-1.png)
 
 Web app:
+
 ![Screenshot](https://i.ibb.co/jTFfMqj/bc-2.jpg)
 
 Key pairs generator:
+
 ![Screenshot](https://i.ibb.co/ZYN8R7D/bc-3.png)
