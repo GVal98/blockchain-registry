@@ -5,9 +5,9 @@
 - Full Paper (74 pages): https://drive.google.com/file/d/1JJ-19L69Da8q83FxyPuI9uX8OwTVtUxV
 
 Web app live demo (different nodes):
-https://gval98.com:1111/
-https://gval98.com:2222/
-https://gval98.com:3333/
+- https://gval98.com:1111/
+- https://gval98.com:2222/
+- https://gval98.com:3333/
 
 Windows full app installer: https://drive.google.com/file/d/1KjR4fgoyj_tnV34QWcvS419CsEp4hzw7
 
