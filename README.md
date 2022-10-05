@@ -23,13 +23,13 @@ Private keys for sending data: https://drive.google.com/drive/folders/196F09Rt8x
 
 ### Stack:
 
-- Electron for desktop app
-- Express as a server
-- Needle for API requests
-- Elliptic for keys generation and signatures
-- Crypto-js for SHA-256
-- Node-forge for generating certificates
-- Bootstrap and jQuery for web and desktop apps 
+- **Electron** for desktop app
+- **Express** as a server
+- **Needle** for API requests
+- **Elliptic** for keys generation and signatures
+- **Crypto-js** for SHA-256
+- **Node-forge** for certificates generation
+- **Bootstrap** and **jQuery** for web and desktop apps 
 
 
 Desktop app:
